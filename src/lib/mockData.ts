@@ -730,3 +730,53 @@ export const CONSUMER_TICKER = [
   "✨ Boat earphones now 91% positive — students' top pick",
   "🛒 Amul Ghee leads FMCG with 94% quality sentiment",
 ];
+
+export type ReviewMock = {
+  id: string;
+  text: string;
+  highlights: string[];
+  badges: ("verified" | "detailed" | "photo" | "flagged")[];
+  lang: string;
+  langOriginal?: string;
+  personas: string[];
+  rating: number;
+  features: { name: string; score: number }[];
+  before: number;
+  after: number;
+  helpful: number;
+  date: string;
+  category: string;
+};
+
+export const REVIEWS_BY_CATEGORY: Record<string, ReviewMock[]> = {
+  electronics: [
+    { id: "e1", text: "The delivery was super fast but packaging was damaged. The phone itself works great though.", highlights: ["delivery", "packaging"], badges: ["verified", "detailed"], lang: "EN", personas: ["Best for Students"], rating: 4, features: [{ name: "Delivery", score: 80 }, { name: "Packaging", score: 40 }], before: 42, after: 78, helpful: 24, date: "March 2025", category: "Electronics" },
+    { id: "e2", text: "बहुत अच्छा फोन है, बैटरी लाइफ बहुत बढ़िया है और कैमरा भी क्लियर है।", highlights: ["बैटरी", "कैमरा"], badges: ["verified", "photo"], lang: "HI", langOriginal: "हिन्दी", personas: ["Heavy Users Only"], rating: 5, features: [{ name: "Battery", score: 92 }, { name: "Camera", score: 88 }], before: 60, after: 88, helpful: 41, date: "Feb 2025", category: "Electronics" },
+    { id: "e3", text: "Good value for money. Quality is decent for the price range.", highlights: ["value", "quality"], badges: ["verified"], lang: "EN", personas: ["Best for Students"], rating: 4, features: [{ name: "Value", score: 85 }, { name: "Quality", score: 70 }], before: 55, after: 80, helpful: 18, date: "Mar 2025", category: "Electronics" },
+    { id: "e4", text: "மிகவும் நல்ல தயாரிப்பு, விரைவான டெலிவரி.", highlights: ["டெலிவரி"], badges: ["verified", "detailed"], lang: "TA", langOriginal: "தமிழ்", personas: ["Good for Family Use"], rating: 5, features: [{ name: "Delivery", score: 90 }, { name: "Quality", score: 82 }], before: 50, after: 85, helpful: 33, date: "Jan 2025", category: "Electronics" },
+    { id: "e5", text: "Same review copy pasted multiple times — looks suspicious.", highlights: [], badges: ["flagged"], lang: "EN", personas: [], rating: 5, features: [{ name: "Quality", score: 100 }], before: 0, after: 0, helpful: 2, date: "Mar 2025", category: "Electronics" },
+    { id: "e6", text: "Decent product but support team was slow to respond. Quality is okay.", highlights: ["support", "quality"], badges: ["verified", "detailed"], lang: "EN", personas: ["Heavy Users Only"], rating: 3, features: [{ name: "Support", score: 45 }, { name: "Quality", score: 68 }], before: 38, after: 55, helpful: 27, date: "Feb 2025", category: "Electronics" },
+    { id: "e7", text: "Bahut accha hai bhai, paisa vasool deal hai ye toh.", highlights: ["value"], badges: ["verified"], lang: "HINGLISH", langOriginal: "Hinglish", personas: ["Best for Students"], rating: 4, features: [{ name: "Value", score: 88 }], before: 60, after: 80, helpful: 15, date: "Mar 2025", category: "Electronics" },
+    { id: "e8", text: "ভাল পণ্য, ব্যাটারি অনেকক্ষণ চলে।", highlights: ["ব্যাটারি"], badges: ["verified", "photo"], lang: "BN", langOriginal: "বাংলা", personas: ["Heavy Users Only"], rating: 5, features: [{ name: "Battery", score: 90 }, { name: "Quality", score: 80 }], before: 55, after: 85, helpful: 22, date: "Jan 2025", category: "Electronics" },
+  ],
+  fmcg: [
+    { id: "f1", text: "Taste is excellent, packaging needs improvement though. Delivery was on time.", highlights: ["taste", "packaging", "delivery"], badges: ["verified", "detailed"], lang: "EN", personas: ["Good for Family Use"], rating: 4, features: [{ name: "Taste", score: 92 }, { name: "Packaging", score: 50 }, { name: "Delivery", score: 78 }], before: 50, after: 75, helpful: 31, date: "Mar 2025", category: "FMCG" },
+    { id: "f2", text: "स्वाद बहुत अच्छा है, पूरे परिवार को पसंद आया।", highlights: ["स्वाद"], badges: ["verified"], lang: "HI", langOriginal: "हिन्दी", personas: ["Good for Family Use"], rating: 5, features: [{ name: "Taste", score: 95 }], before: 70, after: 90, helpful: 45, date: "Feb 2025", category: "FMCG" },
+    { id: "f3", text: "Quality is consistent. Good value for daily use.", highlights: ["quality", "value"], badges: ["verified", "detailed"], lang: "EN", personas: ["Good for Family Use"], rating: 5, features: [{ name: "Quality", score: 88 }, { name: "Value", score: 90 }], before: 65, after: 85, helpful: 28, date: "Jan 2025", category: "FMCG" },
+    { id: "f4", text: "சுவை அருமை, விலை மலிவு.", highlights: ["சுவை"], badges: ["verified", "photo"], lang: "TA", langOriginal: "தமிழ்", personas: ["Best for Students"], rating: 5, features: [{ name: "Taste", score: 90 }, { name: "Value", score: 85 }], before: 60, after: 88, helpful: 19, date: "Mar 2025", category: "FMCG" },
+    { id: "f5", text: "Packaging arrived torn, product was fine but messy. Improve packaging please.", highlights: ["packaging"], badges: ["verified", "photo"], lang: "EN", personas: [], rating: 2, features: [{ name: "Packaging", score: 25 }, { name: "Quality", score: 70 }], before: 30, after: 40, helpful: 38, date: "Feb 2025", category: "FMCG" },
+    { id: "f6", text: "Yaar ye toh top class hai, ghar ke sab log khush hain.", highlights: ["quality"], badges: ["verified"], lang: "HINGLISH", langOriginal: "Hinglish", personas: ["Good for Family Use"], rating: 5, features: [{ name: "Quality", score: 90 }], before: 65, after: 88, helpful: 24, date: "Mar 2025", category: "FMCG" },
+    { id: "f7", text: "मराठी कुटुंबासाठी उत्तम — चव खूप छान आहे.", highlights: ["चव"], badges: ["verified", "detailed"], lang: "MR", langOriginal: "मराठी", personas: ["Good for Family Use"], rating: 5, features: [{ name: "Taste", score: 92 }], before: 70, after: 90, helpful: 16, date: "Jan 2025", category: "FMCG" },
+    { id: "f8", text: "ভাল মান, প্যাকেজিং উন্নত হয়েছে।", highlights: ["মান", "প্যাকেজিং"], badges: ["verified"], lang: "BN", langOriginal: "বাংলা", personas: ["Good for Family Use"], rating: 4, features: [{ name: "Quality", score: 85 }, { name: "Packaging", score: 78 }], before: 55, after: 82, helpful: 21, date: "Feb 2025", category: "FMCG" },
+  ],
+  apparel: [
+    { id: "a1", text: "Fabric quality is great, fits perfectly. Durability seems good after 2 washes.", highlights: ["quality", "durability"], badges: ["verified", "detailed", "photo"], lang: "EN", personas: ["Best for Office"], rating: 5, features: [{ name: "Quality", score: 88 }, { name: "Durability", score: 82 }], before: 60, after: 86, helpful: 36, date: "Mar 2025", category: "Apparel" },
+    { id: "a2", text: "कपड़ा अच्छा है लेकिन साइज़ थोड़ा छोटा निकला।", highlights: ["कपड़ा"], badges: ["verified"], lang: "HI", langOriginal: "हिन्दी", personas: [], rating: 3, features: [{ name: "Quality", score: 75 }, { name: "Fit", score: 50 }], before: 50, after: 65, helpful: 19, date: "Feb 2025", category: "Apparel" },
+    { id: "a3", text: "Delivery was quick. Packaging was neat. Overall happy.", highlights: ["delivery", "packaging"], badges: ["verified"], lang: "EN", personas: ["Good for Family Use"], rating: 4, features: [{ name: "Delivery", score: 85 }, { name: "Packaging", score: 80 }], before: 55, after: 78, helpful: 22, date: "Jan 2025", category: "Apparel" },
+    { id: "a4", text: "துணி தரம் மிகவும் நன்றாக உள்ளது.", highlights: ["துணி"], badges: ["verified", "photo"], lang: "TA", langOriginal: "தமிழ்", personas: ["Best for Office"], rating: 5, features: [{ name: "Quality", score: 90 }], before: 60, after: 86, helpful: 27, date: "Mar 2025", category: "Apparel" },
+    { id: "a5", text: "Color faded after first wash. Disappointing durability.", highlights: ["durability"], badges: ["verified", "detailed"], lang: "EN", personas: [], rating: 2, features: [{ name: "Durability", score: 30 }, { name: "Quality", score: 45 }], before: 50, after: 32, helpful: 41, date: "Feb 2025", category: "Apparel" },
+    { id: "a6", text: "Bhai paisa vasool, fitting bhi ekdum perfect hai.", highlights: ["value"], badges: ["verified"], lang: "HINGLISH", langOriginal: "Hinglish", personas: ["Best for Students"], rating: 4, features: [{ name: "Value", score: 86 }, { name: "Fit", score: 88 }], before: 60, after: 82, helpful: 17, date: "Mar 2025", category: "Apparel" },
+    { id: "a7", text: "ভাল মানের কাপড়, রঙ নষ্ট হয় না।", highlights: ["মান"], badges: ["verified", "detailed"], lang: "BN", langOriginal: "বাংলা", personas: ["Best for Office"], rating: 5, features: [{ name: "Quality", score: 87 }, { name: "Durability", score: 84 }], before: 55, after: 84, helpful: 23, date: "Jan 2025", category: "Apparel" },
+    { id: "a8", text: "Same product reviewed by likely bot account.", highlights: [], badges: ["flagged"], lang: "EN", personas: [], rating: 5, features: [], before: 0, after: 0, helpful: 1, date: "Mar 2025", category: "Apparel" },
+  ],
+};
