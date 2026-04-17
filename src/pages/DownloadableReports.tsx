@@ -117,15 +117,6 @@ export default function DownloadableReports() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-mono text-muted-foreground uppercase">Languages</label>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {LANGUAGES.map((l) => (
-                    <button key={l.code} onClick={() => toggleArr(langs, l.code, setLangs)}
-                      className={`lang-pill ${langs.includes(l.code) ? "active" : ""}`}>{l.label}</button>
-                  ))}
-                </div>
-              </div>
-              <div>
                 <label className="text-xs font-mono text-muted-foreground uppercase">Sentiment</label>
                 <select value={sentiment} onChange={(e) => setSentiment(e.target.value)} className="mt-2 w-full bg-input/60 border border-primary/20 rounded-md px-3 py-2 text-sm">
                   {SENTIMENTS.map((s) => <option key={s}>{s}</option>)}
