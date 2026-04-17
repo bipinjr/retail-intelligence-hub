@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/sellezy/AppHeader";
 import { PageWrapper } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { DownloadButton } from "@/components/sellezy/DownloadButton";
-import { LANGUAGES } from "@/lib/mockData";
+
 import { FileText, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ export default function DownloadableReports() {
   const { role } = useAuth();
   const [cats, setCats] = useState<string[]>(["Electronics"]);
   const [range, setRange] = useState("Last 30 days");
-  const [langs, setLangs] = useState<string[]>(["EN"]);
+  
   const [sentiment, setSentiment] = useState("All");
   const [stage, setStage] = useState("All stages");
   const [format, setFormat] = useState<"CSV" | "JSON" | "PDF">("CSV");
