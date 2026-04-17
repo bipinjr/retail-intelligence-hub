@@ -59,6 +59,7 @@ export default function GeoSalesHeatmap() {
 
   // Init map once
   useEffect(() => {
+    console.log("[Heatmap] init effect, mapRef:", !!mapRef.current, "instance:", !!mapInstance.current, "L:", typeof L);
     if (!mapRef.current || mapInstance.current) return;
     const map = L.map(mapRef.current, {
       center: [20.5937, 78.9629],
