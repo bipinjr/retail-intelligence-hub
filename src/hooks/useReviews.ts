@@ -16,7 +16,7 @@ export function useReviews(options: UseReviewsOptions = {}) {
     const loadData = async () => {
       setIsLoading(true);
       const data = await fetchReviews();
-      setReviews(data);
+      setReviews(data || []);
       setIsLoading(false);
     };
 

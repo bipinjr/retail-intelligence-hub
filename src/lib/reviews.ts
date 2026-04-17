@@ -46,7 +46,7 @@ export async function fetchReviews(): Promise<Review[]> {
  * @param reviewData The review data to insert (omits id and created_at).
  * @returns The inserted review data or null if it fails.
  */
-export async function insertReview(reviewData: InsertReviewDTO): Promise<Review | null> {
+export async function insertReview(reviewData: InsertReviewDTO): Promise<{ data: Review | null, error: any }> {
   try {
     const { data, error } = await supabase
       .from("reviews")
@@ -55,14 +55,14 @@ export async function insertReview(reviewData: InsertReviewDTO): Promise<Review 
       .single();
 
     if (error) {
-      console.error("Error inserting review:", error);
-      return null;
+      console.error("Supabase insert error details:", error);
+      return { data: null, error: error.message || error.details || "Database rejection" };
     }
 
-    return data as Review;
-  } catch (err) {
-    console.error("Unexpected error inserting review:", err);
-    return null;
+    return { data: data as Review, error: null };
+  } catch (err: any) {
+    console.error("Unexpected crash inserting review:", err);
+    return { data: null, error: err.message || "Fatal error during transmission" };
   }
 }
 

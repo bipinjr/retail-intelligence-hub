@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productName, setProductName] = useState("");
@@ -25,10 +25,10 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
     setIsSubmitting(true);
 
     try {
-      const result = await insertReview({
+      const { data: result, error } = await insertReview({
         product_id: productName.toLowerCase().replace(/\s+/g, '-'),
         product_name: productName,
-        reviewer_name: user?.name || "Verified Consumer",
+        reviewer_name: profile?.full_name || user?.email || "Verified Consumer",
         review_text: reviewText,
         rating: rating,
         city: city,
@@ -39,6 +39,11 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
         source: "Sellezy Native Portal",
       });
 
+      if (error) {
+         toast.error(`Database Error: ${error}\nHave you executed the schema in Supabase yet?`);
+         return;
+      }
+
       if (result) {
         toast.success("Review successfully submitted!");
         setProductName("");
@@ -46,11 +51,9 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
         setRating(0);
         setReviewText("");
         onSuccess?.();
-      } else {
-        toast.error("Failed to submit review. Please try again.");
       }
-    } catch (err) {
-      toast.error("An unexpected error occurred.");
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
     }

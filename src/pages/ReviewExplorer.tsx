@@ -49,10 +49,10 @@ export default function ReviewExplorer() {
   const [showShift, setShowShift] = useState(false);
   const { reviews: dbReviewsRaw, isLoading } = useReviews();
 
-  const dbReviews = useMemo(() => dbReviewsRaw.map(mapDbReviewToMock), [dbReviewsRaw]);
-  const mockReviews = REVIEWS_BY_CATEGORY[cat] ?? [];
-  const reviews = useMemo(() => [...dbReviews, ...mockReviews], [dbReviews, mockReviews]);
-  const filtered = useMemo(() => reviews.filter((r) => {
+  const dbReviews = useMemo(() => (dbReviewsRaw || []).map(mapDbReviewToMock), [dbReviewsRaw]);
+  const mockReviews = REVIEWS_BY_CATEGORY[cat] || [];
+  const reviews = useMemo(() => [...(dbReviews || []), ...(mockReviews || [])], [dbReviews, mockReviews]);
+  const filtered = useMemo(() => (reviews || []).filter((r) => {
     if (lang !== "All" && r.lang !== lang) return false;
     if (sentiment !== "All") {
       const avg = r.features.length ? r.features.reduce((s, f) => s + f.score, 0) / r.features.length : 50;
@@ -131,10 +131,10 @@ export default function ReviewExplorer() {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
-                  {filtered.map((r) => (
+                  {(filtered || []).map((r) => (
                     <ReviewCard key={r.id} review={r} showShift={showShift} highlightFeatures={activeFeatures} />
                   ))}
-                  {filtered.length === 0 && (
+                  {(!filtered || filtered.length === 0) && (
                     <GlassCard hoverable={false} className="md:col-span-2 text-center text-muted-foreground py-12">
                       No reviews match these filters.
                     </GlassCard>
