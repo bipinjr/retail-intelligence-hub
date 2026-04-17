@@ -32,7 +32,7 @@ export default function GeoSalesHeatmap() {
   const { role } = useAuth();
   const [hover, setHover] = useState<{ name: string; value: number } | null>(null);
   const [cat, setCat] = useState("All");
-  if (role !== "consumer") return <Navigate to="/home" replace />;
+  if (role !== "producer") return <Navigate to="/home" replace />;
 
   return (
     <>
