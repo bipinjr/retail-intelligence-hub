@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { forwardRef, ReactNode } from "react";
 
 const variants = {
   hidden: { opacity: 0, x: 40 },
@@ -7,11 +7,14 @@ const variants = {
   exit: { opacity: 0, x: -40, transition: { duration: 0.3 } },
 };
 
-export const PageWrapper = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <motion.div variants={variants} initial="hidden" animate="visible" exit="exit" className={className}>
-    {children}
-  </motion.div>
+export const PageWrapper = forwardRef<HTMLDivElement, { children: ReactNode; className?: string }>(
+  ({ children, className }, ref) => (
+    <motion.div ref={ref} variants={variants} initial="hidden" animate="visible" exit="exit" className={className}>
+      {children}
+    </motion.div>
+  )
 );
+PageWrapper.displayName = "PageWrapper";
 
 export const stagger = {
   container: { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } },
