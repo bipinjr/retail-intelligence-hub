@@ -19,15 +19,11 @@ export default function SentimentTrends() {
   const [search, setSearch] = useState("");
   const [activeBrand, setActiveBrand] = useState<string>("");
 
-  if (role !== "consumer") return <Navigate to="/home" replace />;
-
   const brands = TRENDS_BRANDS[cat];
   const filtered = useMemo(
     () => brands.filter((b) => b.name.toLowerCase().includes(search.toLowerCase())),
     [brands, search]
   );
-  const focus = brands.find((b) => b.name === activeBrand) ?? brands[2]; // default boAt-like
-
   const trendData = useMemo(() => {
     return Array.from({ length: 12 }, (_, i) => {
       const row: any = { week: `W${i + 1}` };
@@ -35,6 +31,10 @@ export default function SentimentTrends() {
       return row;
     });
   }, [brands]);
+
+  if (role !== "consumer") return <Navigate to="/home" replace />;
+
+  const focus = brands.find((b) => b.name === activeBrand) ?? brands[2];
 
   const featureCompare = [
     { feature: "Quality", "3 mo ago": focus.start - 6, "Now": focus.end - 2 },

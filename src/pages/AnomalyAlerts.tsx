@@ -24,12 +24,11 @@ export default function AnomalyAlerts() {
   const { t } = useLang();
   const [tab, setTab] = useState<typeof TABS[number]>("All");
   const [resolved, setResolved] = useState<number[]>([]);
-  if (role !== "producer") return <Navigate to="/home" replace />;
-
   const list = useMemo(() => {
     return ANOMALY_ALERTS.map((a) => ({ ...a, severity: resolved.includes(a.id) ? "resolved" : a.severity }))
       .filter((a) => tab === "All" || a.severity === tab);
   }, [tab, resolved]);
+  if (role !== "producer") return <Navigate to="/home" replace />;
 
   return (
     <>

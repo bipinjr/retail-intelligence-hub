@@ -39,13 +39,12 @@ export default function ProductHealthScores() {
   const { t } = useLang();
   const [cat, setCat] = useState<typeof CATS[number]>("Electronics");
   const [q, setQ] = useState("");
-  if (role !== "producer") return <Navigate to="/home" replace />;
-
   const products = useMemo(
     () => PRODUCT_HEALTH[cat].filter((p) => p.name.toLowerCase().includes(q.toLowerCase())),
     [cat, q]
   );
   const lowScoring = PRODUCT_HEALTH[cat].filter((p) => p.score < 75);
+  if (role !== "producer") return <Navigate to="/home" replace />;
 
   return (
     <>

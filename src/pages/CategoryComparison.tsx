@@ -26,8 +26,6 @@ export default function CategoryComparison() {
   const [count, setCount] = useState<2 | 3>(3);
   const [selected, setSelected] = useState<Cat[]>([...ALL]);
 
-  if (role !== "producer") return <Navigate to="/home" replace />;
-
   const toggle = (c: Cat) => {
     setSelected((s) =>
       s.includes(c) ? (s.length > 2 ? s.filter((x) => x !== c) : s) : (s.length < count ? [...s, c] : [...s.slice(1), c])
@@ -42,6 +40,8 @@ export default function CategoryComparison() {
     });
     return features;
   }, [selected]);
+
+  if (role !== "producer") return <Navigate to="/home" replace />;
 
   return (
     <>
