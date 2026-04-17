@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/sellezy/AppHeader";
 import { PageWrapper } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { DownloadButton } from "@/components/sellezy/DownloadButton";
-import { LANGUAGES } from "@/lib/mockData";
+
 import { FileText, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ export default function DownloadableReports() {
   const { role } = useAuth();
   const [cats, setCats] = useState<string[]>(["Electronics"]);
   const [range, setRange] = useState("Last 30 days");
-  const [langs, setLangs] = useState<string[]>(["EN"]);
+  
   const [sentiment, setSentiment] = useState("All");
   const [stage, setStage] = useState("All stages");
   const [format, setFormat] = useState<"CSV" | "JSON" | "PDF">("CSV");
@@ -115,15 +115,6 @@ export default function DownloadableReports() {
                 <select value={range} onChange={(e) => setRange(e.target.value)} className="mt-2 w-full bg-input/60 border border-primary/20 rounded-md px-3 py-2 text-sm">
                   <option>Last 7 days</option><option>Last 30 days</option><option>Last 90 days</option>
                 </select>
-              </div>
-              <div>
-                <label className="text-xs font-mono text-muted-foreground uppercase">Languages</label>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {LANGUAGES.map((l) => (
-                    <button key={l.code} onClick={() => toggleArr(langs, l.code, setLangs)}
-                      className={`lang-pill ${langs.includes(l.code) ? "active" : ""}`}>{l.label}</button>
-                  ))}
-                </div>
               </div>
               <div>
                 <label className="text-xs font-mono text-muted-foreground uppercase">Sentiment</label>
