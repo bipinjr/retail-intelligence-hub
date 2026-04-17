@@ -26,8 +26,6 @@ export default function ReviewExplorer() {
   const [lang, setLang] = useState("All");
   const [showShift, setShowShift] = useState(false);
 
-  if (role !== "consumer") return <Navigate to="/home" replace />;
-
   const reviews = REVIEWS_BY_CATEGORY[cat] ?? [];
   const filtered = useMemo(() => reviews.filter((r) => {
     if (lang !== "All" && r.lang !== lang) return false;
@@ -37,6 +35,8 @@ export default function ReviewExplorer() {
     }
     return true;
   }), [reviews, lang, sentiment]);
+
+  if (role !== "consumer") return <Navigate to="/home" replace />;
 
   const toggleFeat = (f: string) =>
     setActiveFeatures((a) => a.includes(f) ? a.filter((x) => x !== f) : [...a, f]);
