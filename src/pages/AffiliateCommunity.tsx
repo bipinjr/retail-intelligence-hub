@@ -1,9 +1,9 @@
+import { stagger } from "@/components/sellezy/PageWrapper";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { TranslationHint } from "@/components/sellezy/TranslationHint";
 import { PersonaLabel } from "@/components/sellezy/PersonaLabel";
@@ -40,8 +40,6 @@ export default function AffiliateCommunity() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-12">
           <section>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl mb-2">{t("pt_community")}</h1>
@@ -142,7 +140,6 @@ export default function AffiliateCommunity() {
             </div>
           </section>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

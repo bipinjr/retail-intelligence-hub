@@ -3,6 +3,8 @@ import { useLang } from "@/contexts/LanguageContext";
 import { Navigate, Link } from "react-router-dom";
 import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
 import { AppHeader } from "@/components/sellezy/AppHeader";
+import { ProducerLayout } from "@/components/sellezy/ProducerLayout";
+import { ConsumerLayout } from "@/components/sellezy/ConsumerLayout";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { StatCard } from "@/components/sellezy/StatCard";
 import { motion } from "framer-motion";
@@ -61,62 +63,63 @@ export default function HomePage() {
         { label: t("s_offers"), count: 11 },
       ];
 
-  return (
-    <>
-      <AppHeader />
-      <PageWrapper>
-        <main className="container py-10 space-y-12">
-          <motion.section variants={stagger.container} initial="hidden" animate="visible">
-            <motion.h1 variants={stagger.item} className="font-display font-extrabold text-4xl md:text-6xl">
-              {greetingTime(t)}, <span className="text-gradient-teal">{isProducer ? t("producerTitle") : t("consumerTitle")}</span>.
-            </motion.h1>
-            <motion.p variants={stagger.item} className="text-muted-foreground mt-2 text-lg">
-              {t("homeSubline")}
-            </motion.p>
-          </motion.section>
+  const Content = (
+    <main className="container py-10 space-y-12">
+      <motion.section variants={stagger.container} initial="hidden" animate="visible">
+        <motion.h1 variants={stagger.item} className="font-display font-extrabold text-4xl md:text-6xl">
+          {greetingTime(t)}, <span className="text-gradient-teal">{isProducer ? t("producerTitle") : t("consumerTitle")}</span>.
+        </motion.h1>
+        <motion.p variants={stagger.item} className="text-muted-foreground mt-2 text-lg">
+          {t("homeSubline")}
+        </motion.p>
+      </motion.section>
 
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {stats.map((s) => <StatCard key={s.label} {...s} />)}
-          </section>
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        {stats.map((s) => <StatCard key={s.label} {...s} />)}
+      </section>
 
-          <section>
-            <h2 className="font-display font-bold text-2xl md:text-3xl mb-6">
-              {isProducer ? t("producerToolkit") : t("consumerToolkit")}
-            </h2>
-            <motion.div
-              variants={stagger.container}
-              initial="hidden" animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-            >
-              {features.map((f) => (
-                <motion.div key={f.title} variants={stagger.item}>
-                  <Link to={f.to}>
-                    <GlassCard className="h-full group">
-                      <f.icon className="w-8 h-8 text-primary mb-3" />
-                      <h3 className="font-display font-bold text-lg mb-1">{f.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-4">{f.desc}</p>
-                      <span className="inline-flex items-center gap-1 text-xs font-mono text-primary-glow group-hover:gap-2 transition-all">
-                        {t("explore")} <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </GlassCard>
-                  </Link>
-                </motion.div>
-              ))}
+      <section>
+        <h2 className="font-display font-bold text-2xl md:text-3xl mb-6">
+          {isProducer ? t("producerToolkit") : t("consumerToolkit")}
+        </h2>
+        <motion.div
+          variants={stagger.container}
+          initial="hidden" animate="visible"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {features.map((f) => (
+            <motion.div key={f.title} variants={stagger.item}>
+              <Link to={f.to}>
+                <GlassCard className="h-full group">
+                  <f.icon className="w-8 h-8 text-primary mb-3" />
+                  <h3 className="font-display font-bold text-lg mb-1">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{f.desc}</p>
+                  <span className="inline-flex items-center gap-1 text-xs font-mono text-primary-glow group-hover:gap-2 transition-all">
+                    {t("explore")} <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </GlassCard>
+              </Link>
             </motion.div>
-          </section>
+          ))}
+        </motion.div>
+      </section>
 
-          <section className="overflow-hidden border-y border-primary/20 py-3 -mx-4">
-            <div className="ticker text-sm text-muted-foreground font-mono">
-              {[...ticker, ...ticker].map((line, i) => (
-                <span key={i} className="inline-flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-glow" />
-                  {line}
-                </span>
-              ))}
-            </div>
-          </section>
-        </main>
-      </PageWrapper>
-    </>
+      <section className="overflow-hidden border-y border-primary/20 py-3 -mx-4">
+        <div className="ticker text-sm text-muted-foreground font-mono">
+          {[...ticker, ...ticker].map((line, i) => (
+            <span key={i} className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary-glow" />
+              {line}
+            </span>
+          ))}
+        </div>
+      </section>
+    </main>
   );
+
+  if (isProducer) {
+    return <ProducerLayout>{Content}</ProducerLayout>;
+  }
+
+  return <ConsumerLayout>{Content}</ConsumerLayout>;
 }

@@ -10,6 +10,8 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import LandingPage from "./pages/LandingPage";
 import ProducerLoginPage from "./pages/ProducerLoginPage";
 import ConsumerLoginPage from "./pages/ConsumerLoginPage";
+import AuthCallback from "./pages/AuthCallback";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import HomePage from "./pages/HomePage";
 import ProducerDashboard from "./pages/ProducerDashboard";
 import ConsumerDashboard from "./pages/ConsumerDashboard";
@@ -29,31 +31,46 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
+import { ProducerLayout } from "@/components/sellezy/ProducerLayout";
+import { ConsumerLayout } from "@/components/sellezy/ConsumerLayout";
+
+const ProducerShell = () => <ProducerLayout />;
+const ConsumerShell = () => <ConsumerLayout />;
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location} key={location.pathname.split("/")[1] || "root"}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login/producer" element={<ProducerLoginPage />} />
         <Route path="/login/consumer" element={<ConsumerLoginPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         <Route path="/home" element={<HomePage />} />
+        
         {/* Producer */}
-        <Route path="/producer/dashboard" element={<ProducerDashboard />} />
-        <Route path="/producer/sentiment" element={<SentimentPipeline />} />
-        <Route path="/producer/reports" element={<DownloadableReports />} />
-        <Route path="/producer/multilingual" element={<MultilingualOverview />} />
-        <Route path="/producer/health" element={<ProductHealthScores />} />
-        <Route path="/producer/category" element={<CategoryComparison />} />
-        <Route path="/producer/anomaly" element={<AnomalyAlerts />} />
-        <Route path="/producer/heatmap" element={<GeoSalesHeatmap />} />
-        <Route path="/producer/community" element={<AffiliateCommunity />} />
+        <Route path="/producer" element={<ProducerShell />}>
+          <Route path="dashboard" element={<ProducerDashboard />} />
+          <Route path="sentiment" element={<SentimentPipeline />} />
+          <Route path="reports" element={<DownloadableReports />} />
+          <Route path="multilingual" element={<MultilingualOverview />} />
+          <Route path="health" element={<ProductHealthScores />} />
+          <Route path="category" element={<CategoryComparison />} />
+          <Route path="anomaly" element={<AnomalyAlerts />} />
+          <Route path="heatmap" element={<GeoSalesHeatmap />} />
+          <Route path="community" element={<AffiliateCommunity />} />
+        </Route>
+
         {/* Consumer */}
-        <Route path="/consumer/dashboard" element={<ConsumerDashboard />} />
-        <Route path="/consumer/chatbot" element={<ConsumerChatbot />} />
-        <Route path="/consumer/reviews/:category" element={<ReviewExplorer />} />
-        <Route path="/consumer/labels" element={<PersonalizedLabels />} />
-        <Route path="/consumer/trends" element={<SentimentTrends />} />
+        <Route path="/consumer" element={<ConsumerShell />}>
+          <Route path="dashboard" element={<ConsumerDashboard />} />
+          <Route path="chatbot" element={<ConsumerChatbot />} />
+          <Route path="reviews/:category" element={<ReviewExplorer />} />
+          <Route path="labels" element={<PersonalizedLabels />} />
+          <Route path="trends" element={<SentimentTrends />} />
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

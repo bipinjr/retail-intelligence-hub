@@ -1,13 +1,35 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Navigate, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { FeatureChip } from "@/components/sellezy/FeatureChip";
 import { ReviewCard } from "@/components/sellezy/ReviewCard";
-import { REVIEWS_BY_CATEGORY } from "@/lib/mockData";
-import { LANGUAGES } from "@/lib/mockData";
+import { ReviewSubmissionForm } from "@/components/sellezy/ReviewSubmissionForm";
+import { REVIEWS_BY_CATEGORY, LANGUAGES, ReviewMock } from "@/lib/mockData";
+import { Review } from "@/lib/reviews";
+import { useReviews } from "@/hooks/useReviews";
+
+const mapDbReviewToMock = (dbReview: Review): ReviewMock => {
+  const sentimentScore = dbReview.sentiment === "Positive" ? 90 : dbReview.sentiment === "Negative" ? 20 : 50;
+  
+  return {
+    id: dbReview.id,
+    text: dbReview.review_text || "No review text provided.",
+    badges: ["Verified", "Recent"], 
+    langOriginal: null,
+    highlights: ["good", "great", "bad", "terrible", "excellent", "poor", "fast", "slow", "quality"], 
+    personas: dbReview.label_tags || [],
+    rating: dbReview.rating || 5,
+    features: [{ name: dbReview.sentiment || "General Sentiment", score: sentimentScore }],
+    before: 0,
+    after: 0,
+    helpful: Math.floor(Math.random() * 20),
+    category: dbReview.product_name || "Product", 
+    date: new Date(dbReview.created_at).toLocaleDateString(),
+    lang: "en",
+  };
+};
 
 const FEATURES = ["Delivery", "Quality", "Durability", "Taste", "Packaging", "Support", "Value", "Battery", "Camera", "Fit"];
 const SENTIMENTS = ["All", "Positive", "Neutral", "Negative"];
@@ -25,8 +47,11 @@ export default function ReviewExplorer() {
   const [sentiment, setSentiment] = useState("All");
   const [lang, setLang] = useState("All");
   const [showShift, setShowShift] = useState(false);
+  const { reviews: dbReviewsRaw, isLoading } = useReviews();
 
-  const reviews = REVIEWS_BY_CATEGORY[cat] ?? [];
+  const dbReviews = useMemo(() => dbReviewsRaw.map(mapDbReviewToMock), [dbReviewsRaw]);
+  const mockReviews = REVIEWS_BY_CATEGORY[cat] ?? [];
+  const reviews = useMemo(() => [...dbReviews, ...mockReviews], [dbReviews, mockReviews]);
   const filtered = useMemo(() => reviews.filter((r) => {
     if (lang !== "All" && r.lang !== lang) return false;
     if (sentiment !== "All") {
@@ -43,8 +68,6 @@ export default function ReviewExplorer() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">Review Explorer</h1>
@@ -96,20 +119,31 @@ export default function ReviewExplorer() {
               </GlassCard>
             </aside>
 
-            {/* Grid */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {filtered.map((r) => (
-                <ReviewCard key={r.id} review={r} showShift={showShift} highlightFeatures={activeFeatures} />
-              ))}
-              {filtered.length === 0 && (
-                <GlassCard hoverable={false} className="md:col-span-2 text-center text-muted-foreground py-12">
-                  No reviews match these filters.
-                </GlassCard>
+            {/* Grid Area */}
+            <div className="flex flex-col gap-6">
+              <ReviewSubmissionForm />
+              
+              {isLoading ? (
+                <div className="grid md:grid-cols-2 gap-4 animate-pulse">
+                  {[1, 2].map((i) => (
+                    <GlassCard key={i} className="h-48 border-primary/20 bg-primary/5" hoverable={false} />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {filtered.map((r) => (
+                    <ReviewCard key={r.id} review={r} showShift={showShift} highlightFeatures={activeFeatures} />
+                  ))}
+                  {filtered.length === 0 && (
+                    <GlassCard hoverable={false} className="md:col-span-2 text-center text-muted-foreground py-12">
+                      No reviews match these filters.
+                    </GlassCard>
+                  )}
+                </div>
               )}
             </div>
           </div>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

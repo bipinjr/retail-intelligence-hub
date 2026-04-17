@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { DownloadButton } from "@/components/sellezy/DownloadButton";
 
@@ -88,8 +87,6 @@ export default function DownloadableReports() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">Downloadable Reports</h1>
@@ -184,7 +181,6 @@ export default function DownloadableReports() {
             </div>
           </div>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

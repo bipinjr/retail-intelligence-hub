@@ -1,9 +1,9 @@
+import { stagger } from "@/components/sellezy/PageWrapper";
 import { useState, useMemo } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceDot } from "recharts";
@@ -32,8 +32,6 @@ export default function AnomalyAlerts() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -119,7 +117,6 @@ export default function AnomalyAlerts() {
             </div>
           </GlassCard>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

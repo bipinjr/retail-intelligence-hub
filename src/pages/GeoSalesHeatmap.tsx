@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
-import { Globe, AlertTriangle } from "lucide-react";
+import { Globe } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+// Restore shaded heatmap plugin
 import "leaflet.heat";
 
 type Category = "All" | "Electronics" | "FMCG" | "Apparel";
 
+// Step 7/8/10: Null-safe data bindings
 interface HeatPoint {
   lat: number;
   lng: number;
@@ -44,124 +46,175 @@ const POINTS: HeatPoint[] = [
 ];
 
 const CATS: Category[] = ["All", "Electronics", "FMCG", "Apparel"];
+type ViewMode = "sales" | "complaints" | "both";
 
 const SALES_GRADIENT = { 0.0: "#0F2040", 0.4: "#1A6B61", 0.7: "#2EC4B6", 1.0: "#1AFFD5" };
 const COMPLAINT_GRADIENT = { 0.0: "#2a0a14", 0.4: "#7a1f2b", 0.7: "#d83a4a", 1.0: "#ff5577" };
 
 export default function GeoSalesHeatmap() {
   const { role } = useAuth();
+  
   const [cat, setCat] = useState<Category>("All");
-  const [showComplaints, setShowComplaints] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("both");
+  
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
-  const heatLayer = useRef<L.Layer | null>(null);
+  
+  const heatLayerSales = useRef<L.Layer | null>(null);
+  const heatLayerComp = useRef<L.Layer | null>(null);
   const markerLayer = useRef<L.LayerGroup | null>(null);
 
-  // Init map once
+  // Step 6: Map Initialization Try-Catch bounds
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
-    const map = L.map(mapRef.current, {
-      center: [20.5937, 78.9629],
-      zoom: 5,
-      zoomControl: true,
-      attributionControl: false,
-    });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19,
-      subdomains: "abcd",
-    }).addTo(map);
-    mapInstance.current = map;
-    markerLayer.current = L.layerGroup().addTo(map);
 
-    // Fix tiles not rendering when container size changes (framer-motion transitions)
-    const t1 = setTimeout(() => map.invalidateSize(), 100);
-    const t2 = setTimeout(() => map.invalidateSize(), 500);
-    const ro = new ResizeObserver(() => map.invalidateSize());
-    ro.observe(mapRef.current);
+    try {
+      const map = L.map(mapRef.current, {
+        center: [20.5937, 78.9629],
+        zoom: 5,
+        zoomControl: true,
+        attributionControl: false,
+      });
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      ro.disconnect();
-      map.remove();
-      mapInstance.current = null;
-    };
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19,
+        subdomains: "abcd",
+      }).addTo(map);
+
+      mapInstance.current = map;
+      markerLayer.current = L.featureGroup().addTo(map);
+
+      // Timeout forces recalculation post-React-Animations preventing zero-height clipping
+      const t1 = setTimeout(() => map.invalidateSize(), 300);
+      const ro = new ResizeObserver(() => map.invalidateSize());
+      ro.observe(mapRef.current);
+
+      return () => {
+        clearTimeout(t1);
+        ro.disconnect();
+        map.remove();
+        mapInstance.current = null;
+      };
+    } catch (e) {
+      console.error("Leaflet core map initialization failed safely", e);
+    }
   }, []);
 
-  // Update heat + markers when filter / mode changes
+  // Step 7-9: Secure Rendering
   useEffect(() => {
     const map = mapInstance.current;
     if (!map) return;
 
-    const filtered = cat === "All" ? POINTS : POINTS.filter((p) => p.category === cat);
-
-    if (heatLayer.current) {
-      map.removeLayer(heatLayer.current);
-      heatLayer.current = null;
-    }
-
-    const heatData = filtered.map((p) => [
-      p.lat,
-      p.lng,
-      showComplaints ? p.complaint : p.intensity,
-    ]) as [number, number, number][];
-
-    const heatFn = (L as unknown as { heatLayer?: (data: unknown, opts: unknown) => L.Layer }).heatLayer;
-    if (!heatFn) {
-      console.error("[Heatmap] L.heatLayer is undefined — leaflet.heat plugin not loaded");
-      return;
-    }
-    heatLayer.current = heatFn(heatData, {
-      radius: 50,
-      blur: 35,
-      maxZoom: 10,
-      max: 1.0,
-      minOpacity: 0.4,
-      gradient: showComplaints ? COMPLAINT_GRADIENT : SALES_GRADIENT,
-    }).addTo(map);
-
-    // Tooltips
+    // Secure layer purge before re-renders
+    if (heatLayerSales.current) { map.removeLayer(heatLayerSales.current); heatLayerSales.current = null; }
+    if (heatLayerComp.current) { map.removeLayer(heatLayerComp.current); heatLayerComp.current = null; }
     markerLayer.current?.clearLayers();
-    filtered.forEach((p) => {
-      const marker = L.circleMarker([p.lat, p.lng], {
-        radius: 6,
-        color: showComplaints ? "#ff5577" : "#1AFFD5",
-        fillColor: showComplaints ? "#ff5577" : "#2EC4B6",
-        fillOpacity: 0.0,
-        opacity: 0.0,
-        weight: 1,
-      }).bindTooltip(
-        `<div style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">
-          <strong style="font-family: 'Syne', sans-serif; font-size: 13px;">${p.city}</strong><br/>
-          ${showComplaints ? "Complaints" : "Sales"}: ${Math.round((showComplaints ? p.complaint : p.intensity) * 100)}%<br/>
-          Category: ${p.category}
-        </div>`,
-        { direction: "top", offset: [0, -4] }
-      );
-      markerLayer.current?.addLayer(marker);
+
+    const safePoints = Array.isArray(POINTS) ? POINTS : [];
+    const validPoints = safePoints.filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number');
+    const filteredItems = cat === "All" ? validPoints : validPoints.filter((p) => p.category === cat);
+
+    const isBoth = viewMode === "both";
+    const jitter = isBoth ? 0.3 : 0; 
+    
+    // @ts-ignore
+    const heatFn = L.heatLayer;
+    
+    if (!heatFn) {
+       console.warn("Leaflet heatmap plugin not globally attached. Tooltips will still work!");
+    } else {
+       if (viewMode === "sales" || isBoth) {
+         try {
+           const sData = filteredItems.map(p => [p.lat + jitter, p.lng - jitter, p.intensity || 0]);
+           heatLayerSales.current = heatFn(sData, { radius: 50, blur: 35, maxZoom: 10, max: 1.0, minOpacity: 0.4, gradient: SALES_GRADIENT }).addTo(map);
+         } catch(e) { console.error("Sales HeatLayer failed", e) }
+       }
+
+       if (viewMode === "complaints" || isBoth) {
+         try {
+           const cData = filteredItems.map(p => [p.lat - jitter, p.lng + jitter, p.complaint || 0]);
+           heatLayerComp.current = heatFn(cData, { radius: 50, blur: 35, maxZoom: 10, max: 1.0, minOpacity: 0.4, gradient: COMPLAINT_GRADIENT }).addTo(map);
+         } catch(e) { console.error("Complaint HeatLayer failed", e) }
+       }
+    }
+
+    // Render underlying invisible markers purely for interactive Popups/Tooltips
+    filteredItems.forEach((p) => {
+      if (viewMode === "sales" || isBoth) {
+        const val = typeof p.intensity === 'number' ? p.intensity : 0;
+        const sMarker = L.circleMarker([p.lat + jitter, p.lng - jitter], {
+          radius: 20, 
+          color: "transparent",
+          fillOpacity: 0.0,
+        }).bindTooltip(
+          `<div style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">
+            <strong style="font-family: 'Syne', sans-serif; font-size: 13px;">${p.city || 'Unknown'}</strong><br/>
+            Sales Density: ${Math.round(val * 100)}%<br/>
+            Category: ${p.category || 'N/A'}
+          </div>`,
+          { direction: "top", offset: [0, -4] }
+        );
+        markerLayer.current?.addLayer(sMarker);
+      }
+      
+      if (viewMode === "complaints" || isBoth) {
+        const val = typeof p.complaint === 'number' ? p.complaint : 0;
+        const cMarker = L.circleMarker([p.lat - jitter, p.lng + jitter], {
+          radius: 20,
+          color: "transparent",
+          fillOpacity: 0.0,
+        }).bindTooltip(
+          `<div style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">
+            <strong style="font-family: 'Syne', sans-serif; font-size: 13px;">${p.city || 'Unknown'}</strong><br/>
+            Complaint Rate: ${Math.round(val * 100)}%<br/>
+            Category: ${p.category || 'N/A'}
+          </div>`,
+          { direction: "top", offset: [0, -4] }
+        );
+        markerLayer.current?.addLayer(cMarker);
+      }
     });
-  }, [cat, showComplaints]);
+  }, [cat, viewMode]);
+
+  // Step 4 & 10: Fail-Safes and Router Guards preserving Layout Height limits
+  if (!role) {
+    return (
+      <div className="flex-1 flex flex-col min-w-0 h-full p-4 relative font-sans text-foreground">
+        <div className="flex items-center justify-center p-20 text-muted-foreground w-full h-[600px] border border-dashed border-primary/20 rounded-xl bg-bg-card/40 mt-10">
+           <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+              <p className="font-mono text-sm">Authenticating metrics...</p>
+           </div>
+        </div>
+      </div>
+    );
+  }
 
   if (role !== "producer") return <Navigate to="/home" replace />;
 
   return (
-    <>
-      <AppHeader />
-      <PageWrapper>
+    <div className="flex-1 flex flex-col min-w-0 h-full p-4 relative font-sans text-foreground">
         <main className="container py-10 space-y-6">
           <div>
-            <h1 className="font-display font-extrabold text-3xl md:text-5xl">Geo Sales Heatmap</h1>
-            <p className="text-muted-foreground mt-1">Where products are loved most across India.</p>
+            <h1 className="font-display font-extrabold text-3xl md:text-5xl">Geo Sales Scatter</h1>
+            <p className="text-muted-foreground mt-1">High-density regional product interactions across India.</p>
           </div>
 
           <GlassCard hoverable={false} className="bg-primary/10 !border-primary/30 flex items-start gap-3 text-sm">
             <Globe className="w-4 h-4 text-primary-glow shrink-0 mt-0.5" />
-            <div>Showing translated data from हिन्दी, தமிழ் & Hinglish reviews — AI normalisation layer applied.</div>
+            <div>Mapped native sales signals vs complaint severity scaling proportionately.</div>
           </GlassCard>
 
           <GlassCard hoverable={false} className="relative !p-2 overflow-hidden">
-            {/* Top filter bar */}
-            <div className="absolute top-3 left-3 z-[500] flex gap-1.5 flex-wrap">
+            {/* Step 2/5: Safe Map Container shell */}
+            <div
+              ref={mapRef}
+              className="w-full rounded-md overflow-hidden bg-black/40"
+              style={{ minHeight: "600px", height: "600px" }}
+            />
+
+            {/* Filter Toggle Overlay */}
+            <div className="absolute top-3 left-3 z-[1500] flex gap-1.5 flex-wrap">
               {CATS.map((c) => (
                 <button
                   key={c}
@@ -169,7 +222,7 @@ export default function GeoSalesHeatmap() {
                   className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                     cat === c
                       ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30"
-                      : "bg-background/70 backdrop-blur border-primary/30 hover:border-primary text-foreground"
+                      : "bg-background/80 backdrop-blur border-primary/30 hover:border-primary text-foreground"
                   }`}
                 >
                   {c}
@@ -177,41 +230,57 @@ export default function GeoSalesHeatmap() {
               ))}
             </div>
 
-            {/* Complaint toggle */}
-            <button
-              onClick={() => setShowComplaints((v) => !v)}
-              className={`absolute top-3 right-3 z-[500] px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
-                showComplaints
-                  ? "bg-destructive text-destructive-foreground border-destructive"
-                  : "bg-background/70 backdrop-blur border-primary/30 hover:border-primary text-foreground"
-              }`}
-            >
-              <AlertTriangle className="w-3 h-3" />
-              {showComplaints ? "Showing complaints" : "Show complaints"}
-            </button>
-
-            <div
-              ref={mapRef}
-              className="w-full rounded-md overflow-hidden"
-              style={{ height: 560, background: "#0d1b2a" }}
-            />
-
-            {/* Legend */}
-            <div className="absolute bottom-4 right-4 z-[500] flex items-center gap-2 text-xs font-mono text-muted-foreground bg-background/80 backdrop-blur px-3 py-1.5 rounded">
-              Low
-              <span
-                className="w-24 h-2 rounded"
-                style={{
-                  background: showComplaints
-                    ? "linear-gradient(90deg, #2a0a14, #7a1f2b, #d83a4a, #ff5577)"
-                    : "linear-gradient(90deg, #0F2040, #1A6B61, #2EC4B6, #1AFFD5)",
-                }}
-              />
-              High
+            {/* Step 9/10 View Toggle Overlay */}
+            <div className="absolute top-3 right-3 z-[1500] flex gap-1 p-1 bg-background/80 backdrop-blur rounded-full border border-primary/20 shadow-lg">
+              {(["sales", "complaints", "both"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setViewMode(m)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-mono capitalize transition-all ${
+                    viewMode === m
+                      ? m === "sales"
+                        ? "bg-[#1A6B61] text-white shadow"
+                        : m === "complaints"
+                        ? "bg-destructive text-destructive-foreground shadow"
+                        : "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
             </div>
+
+            {/* Empty State Fallback (Over Map Node) */}
+            {(!POINTS || POINTS.length === 0) && (
+              <div className="absolute inset-0 z-[1200] flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm text-muted-foreground">
+                <Globe className="w-8 h-8 mb-3 opacity-20" />
+                <p className="font-mono text-sm">No geographic review data available yet.</p>
+              </div>
+            )}
+            
+            {/* Legend Component */}
+            <div className="absolute bottom-4 right-4 z-[1500] flex flex-col gap-2 text-xs font-mono text-muted-foreground bg-background/80 backdrop-blur px-3 py-2 rounded border border-primary/20">
+              {(viewMode === "sales" || viewMode === "both") && (
+                 <div className="flex items-center gap-2">
+                    <span className="w-16">Sales</span>
+                    <span>Low</span>
+                    <span className="w-20 h-2 rounded" style={{ background: "linear-gradient(90deg, #0F2040, #1A6B61, #2EC4B6, #1AFFD5)" }} />
+                    <span>High</span>
+                 </div>
+              )}
+              {(viewMode === "complaints" || viewMode === "both") && (
+                 <div className="flex items-center gap-2">
+                    <span className="w-16">Complaints</span>
+                    <span>Low</span>
+                    <span className="w-20 h-2 rounded" style={{ background: "linear-gradient(90deg, #2a0a14, #7a1f2b, #d83a4a, #ff5577)" }} />
+                    <span>High</span>
+                 </div>
+              )}
+            </div>
+
           </GlassCard>
         </main>
-      </PageWrapper>
-    </>
+    </div>
   );
 }

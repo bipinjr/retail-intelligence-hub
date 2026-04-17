@@ -2,8 +2,8 @@ import { Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
+
+import { stagger } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { StatCard } from "@/components/sellezy/StatCard";
 import { TranslationHint } from "@/components/sellezy/TranslationHint";
@@ -55,8 +55,6 @@ export default function MultilingualOverview() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-8">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">{t("pt_multi")}</h1>
@@ -126,7 +124,6 @@ export default function MultilingualOverview() {
             </div>
           </section>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

@@ -2,8 +2,7 @@ import { useState, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, BarChart, Bar } from "recharts";
 import { TRENDS_BRANDS } from "@/lib/mockData";
@@ -46,8 +45,6 @@ export default function SentimentTrends() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">{t("pt_trends")}</h1>
@@ -135,7 +132,6 @@ export default function SentimentTrends() {
             <div className="text-sm">📈 <strong className="text-primary-glow">boAt</strong> improved most in Delivery sentiment (+28 pts) — consistent with expanded logistics partnerships seen in reviews.</div>
           </GlassCard>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

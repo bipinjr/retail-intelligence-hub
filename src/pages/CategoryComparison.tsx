@@ -2,8 +2,7 @@ import { useState, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -45,8 +44,6 @@ export default function CategoryComparison() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">{t("pt_category")}</h1>
@@ -138,7 +135,6 @@ export default function CategoryComparison() {
             </div>
           </GlassCard>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

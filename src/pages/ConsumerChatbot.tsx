@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper } from "@/components/sellezy/PageWrapper";
+
 import { ChatBubble } from "@/components/sellezy/ChatBubble";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { Send, Mic, Lightbulb, ChevronDown } from "lucide-react";
@@ -76,8 +75,6 @@ export default function ConsumerChatbot() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-6 max-w-3xl">
           <GlassCard hoverable={false} className="!p-0 flex flex-col h-[calc(100vh-160px)]">
             {/* header */}
@@ -161,7 +158,6 @@ export default function ConsumerChatbot() {
             </div>
           </GlassCard>
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }

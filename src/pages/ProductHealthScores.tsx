@@ -1,9 +1,9 @@
+import { stagger } from "@/components/sellezy/PageWrapper";
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LanguageContext";
-import { AppHeader } from "@/components/sellezy/AppHeader";
-import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
+
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { SentimentBar } from "@/components/sellezy/SentimentBar";
 import { motion } from "framer-motion";
@@ -48,8 +48,6 @@ export default function ProductHealthScores() {
 
   return (
     <>
-      <AppHeader />
-      <PageWrapper>
         <main className="container py-10 space-y-6">
           <div>
             <h1 className="font-display font-extrabold text-3xl md:text-5xl">{t("pt_health")}</h1>
@@ -115,7 +113,6 @@ export default function ProductHealthScores() {
             </section>
           )}
         </main>
-      </PageWrapper>
-    </>
+      </>
   );
 }
