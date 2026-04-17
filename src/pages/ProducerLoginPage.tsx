@@ -5,7 +5,6 @@ import { Building2, Lock, Eye, EyeOff, ArrowRight, Factory, BarChart3 } from "lu
 import { useAuth } from "@/contexts/AuthContext";
 import { PageWrapper } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
-import { LanguagePills } from "@/components/sellezy/LanguagePills";
 import { Logo } from "@/components/sellezy/Logo";
 import { useEffect } from "react";
 
@@ -130,7 +129,6 @@ export default function ProducerLoginPage() {
                 I'm a Consumer →
               </Link>
             </GlassCard>
-            <LanguagePills />
           </div>
         </div>
       </div>

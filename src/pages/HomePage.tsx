@@ -12,29 +12,11 @@ import {
 } from "lucide-react";
 import { PRODUCER_TICKER, CONSUMER_TICKER } from "@/lib/mockData";
 
-const PRODUCER_FEATURES = [
-  { icon: Inbox, title: "Sentiment Pipeline", desc: "4-stage AI pipeline status and insights", to: "/producer/sentiment" },
-  { icon: FileBarChart, title: "Downloadable Reports", desc: "Export CSV, PDF or JSON reports by category", to: "/producer/reports" },
-  { icon: Languages, title: "Multilingual Overview", desc: "Coverage across EN, हिन्दी, தமிழ், বাংলা, मराठी, Hinglish", to: "/producer/sentiment" },
-  { icon: Activity, title: "Product Health Scores", desc: "Per-product quality and defect tracking", to: "/producer/sentiment" },
-  { icon: GitCompare, title: "Category Comparison", desc: "Electronics vs FMCG vs Apparel sentiment cross-view", to: "/producer/sentiment" },
-  { icon: BellRing, title: "Anomaly Alerts", desc: "Recent sentiment drops and spike detection", to: "/producer/sentiment" },
-];
-
-const CONSUMER_FEATURES = [
-  { icon: Map, title: "Geo Sales Heatmap", desc: "Where products are loved most across India", to: "/consumer/heatmap" },
-  { icon: Bot, title: "AI Assistant", desc: "Ask anything about products, reviews, and deals", to: "/consumer/chatbot" },
-  { icon: Trophy, title: "Community & Opportunities", desc: "Affiliate links, expert tips, young entrepreneur hub", to: "/consumer/community" },
-  { icon: SearchCheck, title: "Review Explorer", desc: "Browse smart, filtered, verified reviews", to: "/consumer/reviews/electronics" },
-  { icon: Tag, title: "Personalized Labels", desc: "Products matched to your lifestyle", to: "/consumer/community" },
-  { icon: TrendingUp, title: "Sentiment Trends", desc: "See how brands improved over time", to: "/consumer/heatmap" },
-];
-
-const greetingTime = () => {
+const greetingTime = (t: any) => {
   const h = new Date().getHours();
-  if (h < 12) return "morning";
-  if (h < 17) return "afternoon";
-  return "evening";
+  if (h < 12) return t("goodMorning");
+  if (h < 17) return t("goodAfternoon");
+  return t("goodEvening");
 };
 
 export default function HomePage() {
@@ -43,21 +25,40 @@ export default function HomePage() {
   if (!role) return <Navigate to="/" replace />;
 
   const isProducer = role === "producer";
+
+  const PRODUCER_FEATURES = [
+    { icon: Inbox, title: t("f_pipeline"), desc: t("f_pipeline_desc"), to: "/producer/sentiment" },
+    { icon: FileBarChart, title: t("f_reports"), desc: t("f_reports_desc"), to: "/producer/reports" },
+    { icon: Languages, title: t("f_multi"), desc: t("f_multi_desc"), to: "/producer/multilingual" },
+    { icon: Activity, title: t("f_health"), desc: t("f_health_desc"), to: "/producer/health" },
+    { icon: GitCompare, title: t("f_category"), desc: t("f_category_desc"), to: "/producer/category" },
+    { icon: BellRing, title: t("f_anomaly"), desc: t("f_anomaly_desc"), to: "/producer/anomaly" },
+    { icon: Map, title: t("f_heatmap"), desc: t("f_heatmap_desc"), to: "/producer/heatmap" },
+    { icon: Trophy, title: t("f_community"), desc: t("f_community_desc"), to: "/producer/community" },
+  ];
+
+  const CONSUMER_FEATURES = [
+    { icon: Bot, title: t("f_chatbot"), desc: t("f_chatbot_desc"), to: "/consumer/chatbot" },
+    { icon: SearchCheck, title: t("f_reviews"), desc: t("f_reviews_desc"), to: "/consumer/reviews/electronics" },
+    { icon: Tag, title: t("f_labels"), desc: t("f_labels_desc"), to: "/consumer/labels" },
+    { icon: TrendingUp, title: t("f_trends"), desc: t("f_trends_desc"), to: "/consumer/trends" },
+  ];
+
   const features = isProducer ? PRODUCER_FEATURES : CONSUMER_FEATURES;
   const ticker = isProducer ? PRODUCER_TICKER : CONSUMER_TICKER;
 
   const stats = isProducer
     ? [
-        { label: "Products Monitored", count: 1284 },
-        { label: "Alerts Today", count: 17 },
-        { label: "Avg. Sentiment Score", count: 78, suffix: "%" },
-        { label: "Reviews Processed", count: 3940 },
+        { label: t("s_products"), count: 1284 },
+        { label: t("s_alerts"), count: 17 },
+        { label: t("s_avg"), count: 78, suffix: "%" },
+        { label: t("s_processed"), count: 3940 },
       ]
     : [
-        { label: "Products Browsed", count: 42 },
-        { label: "Reviews Submitted", count: 7 },
-        { label: "Recommendations", count: 23 },
-        { label: "Offers Available", count: 11 },
+        { label: t("s_browsed"), count: 42 },
+        { label: t("s_submitted"), count: 7 },
+        { label: t("s_recs"), count: 23 },
+        { label: t("s_offers"), count: 11 },
       ];
 
   return (
@@ -67,10 +68,10 @@ export default function HomePage() {
         <main className="container py-10 space-y-12">
           <motion.section variants={stagger.container} initial="hidden" animate="visible">
             <motion.h1 variants={stagger.item} className="font-display font-extrabold text-4xl md:text-6xl">
-              Good {greetingTime()}, <span className="text-gradient-teal">{isProducer ? "Producer" : "Shopper"}</span>.
+              {greetingTime(t)}, <span className="text-gradient-teal">{isProducer ? t("producerTitle") : t("consumerTitle")}</span>.
             </motion.h1>
             <motion.p variants={stagger.item} className="text-muted-foreground mt-2 text-lg">
-              {t("greeting")} — here's what's happening across your product ecosystem.
+              {t("homeSubline")}
             </motion.p>
           </motion.section>
 
@@ -80,7 +81,7 @@ export default function HomePage() {
 
           <section>
             <h2 className="font-display font-bold text-2xl md:text-3xl mb-6">
-              {isProducer ? "Your Producer Toolkit" : "Smart Shopper Toolkit"}
+              {isProducer ? t("producerToolkit") : t("consumerToolkit")}
             </h2>
             <motion.div
               variants={stagger.container}

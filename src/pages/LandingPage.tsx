@@ -5,7 +5,6 @@ import { Logo } from "@/components/sellezy/Logo";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { StatCard } from "@/components/sellezy/StatCard";
 import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
-import { LanguagePills } from "@/components/sellezy/LanguagePills";
 import { ArrowRight, VolumeX, MessageSquareQuote, Search, BarChart3, Smartphone, ShoppingCart, Shirt } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
 
@@ -141,7 +140,6 @@ export default function LandingPage() {
               Consumer Login <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
-          <LanguagePills />
         </div>
       </section>
 
