@@ -13,12 +13,11 @@ const AuthContext = createContext<AuthCtx>({ role: null, login: () => {}, logout
 const STORAGE_KEY = "sellezy.role";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [role, setRole] = useState<Role>(null);
-
-  useEffect(() => {
+  const [role, setRole] = useState<Role>(() => {
+    if (typeof window === "undefined") return null;
     const r = localStorage.getItem(STORAGE_KEY) as Role;
-    if (r === "producer" || r === "consumer") setRole(r);
-  }, []);
+    return r === "producer" || r === "consumer" ? r : null;
+  });
 
   const login = (r: Exclude<Role, null>) => {
     localStorage.setItem(STORAGE_KEY, r);
