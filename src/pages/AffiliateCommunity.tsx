@@ -1,50 +1,79 @@
+import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LanguageContext";
 import { AppHeader } from "@/components/sellezy/AppHeader";
 import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
 import { TranslationHint } from "@/components/sellezy/TranslationHint";
 import { PersonaLabel } from "@/components/sellezy/PersonaLabel";
+import { LikeButton } from "@/components/sellezy/LikeButton";
+import { CommentSection } from "@/components/sellezy/CommentSection";
 import { COMMUNITY_POSTS, AFFILIATE_PRODUCTS } from "@/lib/mockData";
-import { GraduationCap, Handshake, Coins, ThumbsUp, MessageCircle, Share2, ExternalLink, Sparkles } from "lucide-react";
+import { GraduationCap, Handshake, Coins, MessageCircle, Share2, ExternalLink, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-
-const HUB = [
-  { icon: GraduationCap, title: "Learn", desc: "Understand how product review data translates to business insights." },
-  { icon: Handshake, title: "Connect", desc: "Join sellers, analysts and retail entrepreneurs in your city." },
-  { icon: Coins, title: "Earn", desc: "Surface high-performing products as affiliate opportunities on Amazon & Flipkart." },
-];
+import { toast } from "sonner";
 
 export default function AffiliateCommunity() {
   const { role } = useAuth();
-  if (role !== "consumer") return <Navigate to="/home" replace />;
+  const { t } = useLang();
+  const [openComments, setOpenComments] = useState<Record<number, boolean>>({});
+
+  if (role !== "producer") return <Navigate to="/home" replace />;
+
+  const HUB = [
+    {
+      icon: GraduationCap, title: "Learn",
+      desc: "Research-backed data collections for business insights.",
+      cta: t("exploreResearch"),
+      href: "https://www.sciencedirect.com/science/article/pii/S2210539526000301",
+      badge: "📄 Research-backed data collections",
+    },
+    { icon: Handshake, title: "Connect", desc: "Join sellers, analysts and retail entrepreneurs in your city.", cta: t("learnMore") },
+    { icon: Coins, title: "Earn", desc: "Surface high-performing products as affiliate opportunities on Amazon & Flipkart.", cta: t("learnMore") },
+  ];
+
+  const share = () => {
+    navigator.clipboard?.writeText(window.location.href).catch(() => {});
+    toast.success("Link copied!");
+  };
 
   return (
     <>
       <AppHeader />
       <PageWrapper>
         <main className="container py-10 space-y-12">
-          {/* Hub */}
           <section>
-            <h1 className="font-display font-extrabold text-3xl md:text-5xl mb-2">Opportunities for Young Minds</h1>
-            <p className="text-muted-foreground mb-8">Build your edge in retail with data-driven insight.</p>
+            <h1 className="font-display font-extrabold text-3xl md:text-5xl mb-2">{t("pt_community")}</h1>
+            <p className="text-muted-foreground mb-8">{t("pt_community_sub")}</p>
             <motion.div variants={stagger.container} initial="hidden" animate="visible" className="grid md:grid-cols-3 gap-5">
               {HUB.map((h) => (
                 <motion.div key={h.title} variants={stagger.item}>
                   <GlassCard className="h-full">
                     <h.icon className="w-8 h-8 text-primary mb-3" />
                     <h3 className="font-display font-bold text-xl mb-2">{h.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-5">{h.desc}</p>
-                    <button className="px-4 py-2 rounded-full text-xs font-mono border border-primary text-primary-glow hover:bg-primary/15 transition-all">
-                      Learn more →
-                    </button>
+                    <p className="text-sm text-muted-foreground mb-4">{h.desc}</p>
+                    {h.href ? (
+                      <a href={h.href} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-xs font-mono border border-primary text-primary-glow hover:bg-primary/15 transition-all">
+                        {h.cta} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <button className="px-4 py-2 rounded-full text-xs font-mono border border-primary text-primary-glow hover:bg-primary/15 transition-all">
+                        {h.cta}
+                      </button>
+                    )}
+                    {h.badge && (
+                      <div className="mt-3 inline-block text-[10px] font-mono px-2 py-1 rounded-full bg-primary/10 text-primary-glow border border-primary/30">
+                        {h.badge}
+                      </div>
+                    )}
                   </GlassCard>
                 </motion.div>
               ))}
             </motion.div>
           </section>
 
-          {/* Community feed */}
           <section>
             <h2 className="font-display font-bold text-2xl md:text-3xl mb-6">Community Feed</h2>
             <div className="grid md:grid-cols-2 gap-5">
@@ -52,7 +81,7 @@ export default function AffiliateCommunity() {
                 <motion.div key={p.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                   <GlassCard hoverable={false} className="!p-0 overflow-hidden">
                     {p.affiliate && (
-                      <div className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground text-[10px] font-mono uppercase tracking-wider px-4 py-1.5 flex items-center gap-1.5">
+                      <div className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground text-[10px] font-mono uppercase tracking-wider px-4 py-1.5 flex items-center gap-1.5 animate-pulse">
                         <Sparkles className="w-3 h-3" /> Affiliate Opportunity
                       </div>
                     )}
@@ -69,14 +98,20 @@ export default function AffiliateCommunity() {
                           {p.category}
                         </span>
                       </div>
-                      {p.original && <TranslationHint lang={p.lang === "TA" ? "தமிழ்" : p.lang === "BN" ? "বাংলা" : p.lang === "HI" ? "हिन्दी" : "Hinglish"} />}
+                      {(p as any).original && <TranslationHint lang={p.lang === "TA" ? "தமிழ்" : p.lang === "BN" ? "বাংলা" : p.lang === "HI" ? "हिन्दी" : "Hinglish"} />}
                       <p className="text-sm text-foreground/90">{p.text}</p>
-                      {p.original && <p className="text-xs text-muted-foreground italic">Original: {p.original}</p>}
+                      {(p as any).original && <p className="text-xs text-muted-foreground italic">Original: {(p as any).original}</p>}
                       <div className="flex items-center gap-5 pt-2 border-t border-primary/10 text-xs text-muted-foreground">
-                        <button className="inline-flex items-center gap-1 hover:text-primary-glow"><ThumbsUp className="w-3.5 h-3.5" /> 24</button>
-                        <button className="inline-flex items-center gap-1 hover:text-primary-glow"><MessageCircle className="w-3.5 h-3.5" /> 6</button>
-                        <button className="inline-flex items-center gap-1 hover:text-primary-glow"><Share2 className="w-3.5 h-3.5" /> Share</button>
+                        <LikeButton initial={20 + p.id * 3} />
+                        <button onClick={() => setOpenComments((s) => ({ ...s, [p.id]: !s[p.id] }))}
+                          className="inline-flex items-center gap-1 hover:text-primary-glow">
+                          <MessageCircle className="w-3.5 h-3.5" /> {p.seedComments?.length ?? 0}
+                        </button>
+                        <button onClick={share} className="inline-flex items-center gap-1 hover:text-primary-glow ml-auto">
+                          <Share2 className="w-3.5 h-3.5" /> Share
+                        </button>
                       </div>
+                      <CommentSection open={!!openComments[p.id]} seed={p.seedComments ?? []} />
                     </div>
                   </GlassCard>
                 </motion.div>
@@ -84,7 +119,6 @@ export default function AffiliateCommunity() {
             </div>
           </section>
 
-          {/* Affiliate products */}
           <section>
             <h2 className="font-display font-bold text-2xl md:text-3xl mb-6">Affiliate Products</h2>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x">
