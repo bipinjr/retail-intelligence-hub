@@ -73,7 +73,16 @@ export default function GeoSalesHeatmap() {
     mapInstance.current = map;
     markerLayer.current = L.layerGroup().addTo(map);
 
+    // Fix tiles not rendering when container size changes (framer-motion transitions)
+    const t1 = setTimeout(() => map.invalidateSize(), 100);
+    const t2 = setTimeout(() => map.invalidateSize(), 500);
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(mapRef.current);
+
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      ro.disconnect();
       map.remove();
       mapInstance.current = null;
     };
