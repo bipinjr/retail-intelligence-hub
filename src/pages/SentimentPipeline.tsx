@@ -53,6 +53,115 @@ const Stage = ({ num, title, children, defaultOpen }: { num: number; title: stri
   );
 };
 
+const SOLUTIONS = [
+  {
+    key: "urgent" as const,
+    severity: "Urgent",
+    severityColor: "text-destructive",
+    border: "border-destructive bg-destructive/10",
+    icon: AlertCircle,
+    title: "FMCG Packaging Defect",
+    sub: "3 batches affected this week.",
+    detail: [
+      ["Affected Batches", "#A201, #A202, #A204"],
+      ["Root Cause", "Packaging seal failure — supplier batch"],
+      ["Impacted Region", "Maharashtra, Karnataka"],
+      ["Complaint Volume", "142 reviews flagged"],
+      ["Recommended Action", "Pause dispatch, contact supplier, issue replacement"],
+      ["Responsible Team", "Quality Assurance → Supply Chain Lead"],
+      ["Timeline", "Immediate (within 48h)"],
+    ],
+  },
+  {
+    key: "monitor" as const,
+    severity: "Monitor",
+    severityColor: "text-warning",
+    border: "border-warning bg-warning/10",
+    icon: AlertTriangle,
+    title: "Electronics Delivery SLA",
+    sub: "Tamil Nadu showing decline.",
+    detail: [
+      ["Affected SKUs", "3 electronics products (smartphones, earphones)"],
+      ["Region", "Tamil Nadu (Chennai hub — 38% SLA breach rate)"],
+      ["Trend", "SLA score dropped from 84% → 67% over 4 weeks"],
+      ["Recommended Action", "Escalate to logistics partner, review last-mile ops"],
+      ["Responsible Team", "Logistics Ops → Regional Manager"],
+      ["Timeline", "5–7 business days"],
+    ],
+  },
+  {
+    key: "positive" as const,
+    severity: "Positive",
+    severityColor: "text-success",
+    border: "border-success bg-success/10",
+    icon: CheckCircle2,
+    title: "Apparel Durability",
+    sub: "Score at 76% — highlight in marketing.",
+    detail: [
+      ["Top Performing Products", "Cotton kurtas, denim jackets"],
+      ["Durability Score", "76% positive (up from 61% last quarter)"],
+      ["Customer Quotes", "\"Lasted 2 monsoons!\", \"Stitching holds well\""],
+      ["Recommended Action", "Feature in marketing campaigns, push social proof"],
+      ["Responsible Team", "Marketing → Brand Manager"],
+      ["Timeline", "Next campaign cycle"],
+    ],
+  },
+];
+
+const BusinessSolutions = () => {
+  const [open, setOpen] = useState<string | null>(null);
+  return (
+    <div className="space-y-4">
+      <div className="grid md:grid-cols-3 gap-4">
+        {SOLUTIONS.map((s) => (
+          <div key={s.key} className={`border-l-4 rounded-md p-4 ${s.border}`}>
+            <s.icon className={`w-5 h-5 mb-2 ${s.severityColor}`} />
+            <div className={`text-xs font-mono uppercase ${s.severityColor}`}>{s.severity}</div>
+            <div className="font-display font-bold mt-1">{s.title}</div>
+            <p className="text-xs text-muted-foreground mt-1">{s.sub}</p>
+            <button onClick={() => setOpen(open === s.key ? null : s.key)} className="text-xs text-primary-glow font-mono mt-3 hover:underline">
+              {open === s.key ? "Hide details" : "Details →"}
+            </button>
+          </div>
+        ))}
+      </div>
+      <AnimatePresence>
+        {open && (() => {
+          const s = SOLUTIONS.find((x) => x.key === open)!;
+          return (
+            <motion.div
+              key={s.key}
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className={`glass-card border-l-4 ${s.border} p-5 mt-2`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <s.icon className={`w-5 h-5 ${s.severityColor}`} />
+                    <div className="font-display font-bold">{s.title} — Action Plan</div>
+                  </div>
+                  <button onClick={() => setOpen(null)} className="text-xs font-mono text-muted-foreground hover:text-primary-glow">Close ×</button>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
+                  {s.detail.map(([label, val]) => (
+                    <div key={label} className="text-xs">
+                      <div className="text-muted-foreground font-mono uppercase tracking-wider text-[10px]">{label}</div>
+                      <div className="text-foreground/90 mt-0.5">{val}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function SentimentPipeline() {
   const { role } = useAuth();
   const [cat, setCat] = useState<"Electronics" | "FMCG" | "Apparel">("Electronics");
@@ -147,29 +256,7 @@ export default function SentimentPipeline() {
           </Stage>
 
           <Stage num={4} title="Business Solutions">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="border-l-4 border-destructive bg-destructive/10 rounded-md p-4">
-                <AlertCircle className="w-5 h-5 text-destructive mb-2" />
-                <div className="text-xs font-mono text-destructive uppercase">Urgent</div>
-                <div className="font-display font-bold mt-1">FMCG Packaging Defect</div>
-                <p className="text-xs text-muted-foreground mt-1">3 batches affected this week.</p>
-                <button className="text-xs text-primary-glow font-mono mt-3 hover:underline">Details →</button>
-              </div>
-              <div className="border-l-4 border-warning bg-warning/10 rounded-md p-4">
-                <AlertTriangle className="w-5 h-5 text-warning mb-2" />
-                <div className="text-xs font-mono text-warning uppercase">Monitor</div>
-                <div className="font-display font-bold mt-1">Electronics Delivery SLA</div>
-                <p className="text-xs text-muted-foreground mt-1">Tamil Nadu showing decline.</p>
-                <button className="text-xs text-primary-glow font-mono mt-3 hover:underline">Details →</button>
-              </div>
-              <div className="border-l-4 border-success bg-success/10 rounded-md p-4">
-                <CheckCircle2 className="w-5 h-5 text-success mb-2" />
-                <div className="text-xs font-mono text-success uppercase">Positive</div>
-                <div className="font-display font-bold mt-1">Apparel Durability</div>
-                <p className="text-xs text-muted-foreground mt-1">Score at 76% — highlight in marketing.</p>
-                <button className="text-xs text-primary-glow font-mono mt-3 hover:underline">Details →</button>
-              </div>
-            </div>
+            <BusinessSolutions />
           </Stage>
         </main>
       </PageWrapper>

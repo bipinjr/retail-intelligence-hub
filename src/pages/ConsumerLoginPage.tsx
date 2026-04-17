@@ -5,7 +5,6 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, ShoppingBag, Star } from "lucide-r
 import { useAuth } from "@/contexts/AuthContext";
 import { PageWrapper } from "@/components/sellezy/PageWrapper";
 import { GlassCard } from "@/components/sellezy/GlassCard";
-import { LanguagePills } from "@/components/sellezy/LanguagePills";
 import { Logo } from "@/components/sellezy/Logo";
 
 const FLOATING_REVIEWS = [
@@ -113,7 +112,6 @@ export default function ConsumerLoginPage() {
                 I'm a Producer →
               </Link>
             </GlassCard>
-            <LanguagePills />
           </div>
         </div>
       </div>

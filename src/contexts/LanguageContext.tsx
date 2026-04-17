@@ -2,14 +2,19 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { LANG_LABELS } from "@/lib/mockData";
 
 type LangCode = keyof typeof LANG_LABELS;
+type LabelKey = keyof (typeof LANG_LABELS)["EN"];
 
 interface LangCtx {
   lang: LangCode;
   setLang: (l: LangCode) => void;
-  t: (key: keyof (typeof LANG_LABELS)["EN"]) => string;
+  t: (key: LabelKey) => string;
 }
 
-const LanguageContext = createContext<LangCtx>({ lang: "EN", setLang: () => {}, t: (k) => LANG_LABELS.EN[k] });
+const LanguageContext = createContext<LangCtx>({
+  lang: "EN",
+  setLang: () => {},
+  t: (k) => LANG_LABELS.EN[k],
+});
 
 const KEY = "sellezy.lang";
 
@@ -23,7 +28,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(KEY, l);
     setLangState(l);
   };
-  const t = (k: keyof (typeof LANG_LABELS)["EN"]) => LANG_LABELS[lang]?.[k] ?? LANG_LABELS.EN[k];
+  const t = (k: LabelKey) => (LANG_LABELS[lang] as any)?.[k] ?? LANG_LABELS.EN[k];
   return <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>;
 };
 
