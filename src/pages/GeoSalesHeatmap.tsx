@@ -106,12 +106,17 @@ export default function GeoSalesHeatmap() {
       showComplaints ? p.complaint : p.intensity,
     ]) as [number, number, number][];
 
-    // @ts-expect-error - leaflet.heat augments L at runtime
-    heatLayer.current = L.heatLayer(heatData, {
-      radius: 35,
-      blur: 25,
+    const heatFn = (L as unknown as { heatLayer?: (data: unknown, opts: unknown) => L.Layer }).heatLayer;
+    if (!heatFn) {
+      console.error("[Heatmap] L.heatLayer is undefined — leaflet.heat plugin not loaded");
+      return;
+    }
+    heatLayer.current = heatFn(heatData, {
+      radius: 50,
+      blur: 35,
       maxZoom: 10,
       max: 1.0,
+      minOpacity: 0.4,
       gradient: showComplaints ? COMPLAINT_GRADIENT : SALES_GRADIENT,
     }).addTo(map);
 
