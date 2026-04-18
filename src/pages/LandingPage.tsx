@@ -87,17 +87,6 @@ export default function LandingPage() {
       {/* HERO */}
       <section className="relative min-h-screen flex flex-col">
         <FloatingDots />
-        <nav className="container flex items-center justify-between py-6 relative z-10">
-          <Logo size={32} />
-          <div className="hidden md:flex items-center gap-6">
-            <a href="#how" className="text-sm text-muted-foreground hover:text-primary-glow transition">How it Works</a>
-            <a href="#pipeline" className="text-sm text-muted-foreground hover:text-primary-glow transition">For Producers</a>
-            <a href="#categories" className="text-sm text-muted-foreground hover:text-primary-glow transition">For Consumers</a>
-            <Link to="/login/consumer" className="btn-glow inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-mono font-medium">
-              Get Started <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </nav>
 
         <div className="container flex-1 flex flex-col items-center justify-center text-center relative z-10 py-20">
           <motion.h1

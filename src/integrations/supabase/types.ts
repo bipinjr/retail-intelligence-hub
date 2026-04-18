@@ -14,7 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          id: string
+          label_tags: string[] | null
+          latitude: number | null
+          longitude: number | null
+          platform: string | null
+          product_id: string | null
+          product_name: string
+          rating: number
+          review_text: string
+          reviewer_name: string | null
+          sentiment: string | null
+          source: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          label_tags?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          platform?: string | null
+          product_id?: string | null
+          product_name: string
+          rating: number
+          review_text: string
+          reviewer_name?: string | null
+          sentiment?: string | null
+          source?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          label_tags?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          platform?: string | null
+          product_id?: string | null
+          product_name?: string
+          rating?: number
+          review_text?: string
+          reviewer_name?: string | null
+          sentiment?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
