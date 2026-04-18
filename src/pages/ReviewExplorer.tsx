@@ -203,6 +203,7 @@ export default function ReviewExplorer() {
                 <ReviewCard key={r.id} review={r} />
               ))}
               
+              {/* Empty Data State / Error Structural Fallback */}
               {filtered.length === 0 && (
                 <GlassCard hoverable={false} className="md:col-span-2 text-center py-12 flex flex-col items-center justify-center space-y-3">
                    <div className="text-4xl">🗂️</div>
@@ -211,7 +212,6 @@ export default function ReviewExplorer() {
                      The database returned empty or our filters hid the results. Submit the first review to see live insights directly!
                    </p>
                 </GlassCard>
-              )}
               )}
             </div>
           )}
