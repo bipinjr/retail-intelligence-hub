@@ -16,7 +16,7 @@ const mapDbReviewToMock = (dbReview: Review): ReviewMock => {
   return {
     id: dbReview.id,
     text: dbReview.review_text || "No review text provided.",
-    badges: ["Verified", "Recent"], 
+    badges: ["verified"], 
     langOriginal: null,
     highlights: ["good", "great", "bad", "terrible", "excellent", "poor", "fast", "slow", "quality"], 
     personas: dbReview.label_tags || [],
@@ -126,7 +126,7 @@ export default function ReviewExplorer() {
               {isLoading ? (
                 <div className="grid md:grid-cols-2 gap-4 animate-pulse">
                   {[1, 2].map((i) => (
-                    <GlassCard key={i} className="h-48 border-primary/20 bg-primary/5" hoverable={false} />
+                    <GlassCard key={i} className="h-48 border-primary/20 bg-primary/5" hoverable={false}>{null}</GlassCard>
                   ))}
                 </div>
               ) : (
