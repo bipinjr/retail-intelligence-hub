@@ -26,7 +26,7 @@ const FloatingDots = () => (
   </div>
 );
 
-const headlineWords = ["Turn", "Noise", "Into", "Intelligence."];
+const headlineWords = ["Turn", "Noise", "Into", "Profit"];
 
 const PIPELINE = [
   { icon: VolumeX, title: "Noise Reduction", desc: "Deduplication, spam filter, emoji & Hinglish normalisation" },
