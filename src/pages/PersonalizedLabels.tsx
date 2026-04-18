@@ -76,9 +76,52 @@ export default function PersonalizedLabels() {
                         </li>
                       ))}
                     </ul>
-                    <a href="#" className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2 rounded-md text-xs font-mono border border-primary/40 text-primary-glow hover:bg-primary/15 transition-all">
-                      View on {(p?.store || "Partner")} <ExternalLink className="w-3 h-3" />
-                    </a>
+                    
+                    {(() => {
+                      const isValidMarketplaceUrl = (url: string | undefined): url is string => {
+                        if (!url || typeof url !== "string") return false;
+                        const isHttp = url.startsWith("http://") || url.startsWith("https://");
+                        if (!isHttp) return false;
+                        
+                        // Basic check for marketplace patterns to avoid rendering generic homepages as product links
+                        const isAmazon = url.includes("amazon.in") && (url.includes("/dp/") || url.includes("/gp/"));
+                        const isFlipkart = url.includes("flipkart.com") && (url.includes("/p/") || url.includes("pid="));
+                        const isPartner = !url.includes("amazon.in") && !url.includes("flipkart.com");
+
+                        return isAmazon || isFlipkart || isPartner;
+                      };
+
+                      const links = [
+                        { label: "View on Amazon", url: p.amazonUrl },
+                        { label: "View on Flipkart", url: p.flipkartUrl },
+                        { label: "View on Partner", url: p.partnerUrl },
+                      ].filter(l => isValidMarketplaceUrl(l.url));
+
+                      if (links.length > 0) {
+                        return (
+                          <div className="flex flex-col gap-2">
+                            {links.map((link) => (
+                              <a 
+                                key={link.label}
+                                href={link.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2 rounded-md text-xs font-mono border border-primary/40 text-primary-glow hover:bg-primary/15 transition-all shadow-sm shadow-primary/5"
+                              >
+                                {link.label} <ExternalLink className="w-3 h-3" />
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="inline-flex items-center justify-center gap-1.5 w-full px-3 py-2 rounded-md text-xs font-mono border border-primary/10 text-muted-foreground/50 cursor-not-allowed bg-white/5">
+                          Marketplace link unavailable <ExternalLink className="w-3 h-3 opacity-30" />
+                        </div>
+                      );
+                    })()}
+
                     <button onClick={() => setOpenCard(open ? null : (p?.name || "Unknown"))}
                       className="w-full inline-flex items-center justify-between text-xs font-mono text-muted-foreground hover:text-primary-glow pt-2 border-t border-primary/10">
                       Why this recommendation?

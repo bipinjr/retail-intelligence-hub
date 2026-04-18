@@ -9,11 +9,15 @@ export default function AuthCallback() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
+        console.log("AuthCallback: Session found, redirecting to /home");
         navigate("/home", { replace: true });
+      } else {
+        console.log("AuthCallback: No session found");
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("AuthCallback: Auth event:", event);
       if (event === "SIGNED_IN" && session) {
         navigate("/home", { replace: true });
       } else if (event === "SIGNED_OUT") {

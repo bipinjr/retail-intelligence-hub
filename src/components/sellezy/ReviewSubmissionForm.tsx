@@ -14,11 +14,12 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [platform, setPlatform] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!productName || !city || !reviewText || rating === 0) {
-      toast.error("Please fill all required fields and select a rating.");
+    if (!productName || !city || !reviewText || rating === 0 || !platform) {
+      toast.error("Please fill all required fields, select a platform, and a rating.");
       return;
     }
 
@@ -37,6 +38,7 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
         latitude: null, // Resolves server side typically or via native IP mappings
         longitude: null,
         source: "Sellezy Native Portal",
+        platform: platform,
       });
 
       if (error) {
@@ -50,6 +52,7 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
         setCity("");
         setRating(0);
         setReviewText("");
+        setPlatform("");
         onSuccess?.();
       }
     } catch (err: any) {
@@ -91,6 +94,24 @@ export function ReviewSubmissionForm({ onSuccess }: { onSuccess?: () => void }) 
               placeholder="e.g. Bangalore"
             />
           </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-mono text-muted-foreground uppercase">Platform</label>
+          <select
+            required
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            className="w-full bg-background/50 border border-primary/20 focus:border-primary rounded-md p-2 text-sm text-foreground outline-none transition-colors appearance-none cursor-pointer"
+          >
+            <option value="" disabled className="bg-bg-secondary">Select Platform</option>
+            <option value="Amazon" className="bg-bg-secondary">Amazon</option>
+            <option value="Flipkart" className="bg-bg-secondary">Flipkart</option>
+            <option value="Offline Store" className="bg-bg-secondary">Offline Store</option>
+            <option value="Myntra" className="bg-bg-secondary">Myntra</option>
+            <option value="Meesho" className="bg-bg-secondary">Meesho</option>
+            <option value="Other" className="bg-bg-secondary">Other</option>
+          </select>
         </div>
 
         <div className="space-y-1">

@@ -7,11 +7,12 @@ const map = {
   flagged: { icon: AlertTriangle, label: "Flagged: Duplicate", cls: "text-destructive border-destructive/40 bg-destructive/10" },
 } as const;
 
-export const QualityBadge = ({ type }: { type: keyof typeof map }) => {
-  const { icon: Icon, label, cls } = map[type];
+export const QualityBadge = ({ type }: { type: keyof typeof map | string }) => {
+  const badgeConfig = (map as Record<string, any>)[type?.toLowerCase()] || map.verified;
+  const { icon: Icon, label, cls } = badgeConfig;
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono border ${cls}`}>
-      <Icon className="w-3 h-3" /> {label}
+      <Icon className="w-3 h-3" /> {type === "Recent" ? "Recent" : label}
     </span>
   );
 };

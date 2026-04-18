@@ -63,7 +63,7 @@ export const ConsumerLayout = ({ children }: { children?: ReactNode }) => {
   };
 
   const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
-    <div className={`flex flex-col h-full bg-bg-secondary/40 backdrop-blur-xl border-r border-primary/20 ${collapsed ? "items-center" : ""}`}>
+    <div className={`flex flex-col h-full bg-black/10 backdrop-blur-3xl border-r border-primary/20 ${collapsed ? "items-center" : ""}`}>
       <div className="flex items-center gap-3 p-5 border-b border-primary/10">
         <Logo size={24} />
       </div>
@@ -137,7 +137,7 @@ export const ConsumerLayout = ({ children }: { children?: ReactNode }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative bg-transparent">
         <AppHeader 
           onMenuClick={handleMenuClick} 
           isSidebarLayout 

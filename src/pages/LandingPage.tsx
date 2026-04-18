@@ -8,23 +8,7 @@ import { PageWrapper, stagger } from "@/components/sellezy/PageWrapper";
 import { ArrowRight, VolumeX, MessageSquareQuote, Search, BarChart3, Smartphone, ShoppingCart, Shirt } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
 
-const FloatingDots = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-    {Array.from({ length: 12 }).map((_, i) => (
-      <span
-        key={i}
-        className="float-dot"
-        style={{
-          left: `${(i * 8.3) % 100}%`,
-          bottom: `-${Math.random() * 20}px`,
-          animationDelay: `${(i * 0.4) % 4}s`,
-          animationDuration: `${6 + (i % 4) * 2}s`,
-          opacity: 0.1 + ((i * 0.05) % 0.3),
-        }}
-      />
-    ))}
-  </div>
-);
+// Legacy FloatingDots removed in favor of InteractiveNeuralVortex
 
 const headlineWords = ["Turn", "Noise", "Into", "Intelligence."];
 
@@ -86,7 +70,6 @@ export default function LandingPage() {
     <PageWrapper>
       {/* HERO */}
       <section className="relative min-h-screen flex flex-col">
-        <FloatingDots />
         <nav className="container flex items-center justify-between py-6 relative z-10">
           <Logo size={32} />
           <div className="hidden md:flex items-center gap-6">
@@ -99,7 +82,7 @@ export default function LandingPage() {
           </div>
         </nav>
 
-        <div className="container flex-1 flex flex-col items-center justify-center text-center relative z-10 py-20">
+        <div className="container flex-1 flex flex-col items-center justify-center text-center relative z-10 py-20 backdrop-blur-[2px]">
           <motion.h1
             variants={stagger.container}
             initial="hidden"

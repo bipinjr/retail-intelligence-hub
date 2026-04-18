@@ -20,7 +20,7 @@ export default function ProducerLoginPage() {
   const [show, setShow] = useState(false);
   const [remember, setRemember] = useState(true);
   const [qIdx, setQIdx] = useState(0);
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,10 +120,6 @@ export default function ProducerLoginPage() {
               <button onClick={onLogin} className="btn-glow w-full inline-flex items-center justify-center gap-2 py-3 rounded-md font-mono">
                 Access Dashboard <ArrowRight className="w-4 h-4" />
               </button>
-
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <div className="h-px bg-primary/20 flex-1" /> or <div className="h-px bg-primary/20 flex-1" />
-              </div>
 
               <Link to="/login/consumer" className="block text-center text-sm text-primary-glow hover:underline font-mono">
                 I'm a Consumer →

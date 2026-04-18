@@ -33,15 +33,20 @@ const queryClient = new QueryClient();
 
 import { ProducerLayout } from "@/components/sellezy/ProducerLayout";
 import { ConsumerLayout } from "@/components/sellezy/ConsumerLayout";
+import InteractiveNeuralVortex from "@/components/ui/InteractiveNeuralVortex";
 
 const ProducerShell = () => <ProducerLayout />;
 const ConsumerShell = () => <ConsumerLayout />;
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const isLanding = location.pathname === "/";
+  
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname.split("/")[1] || "root"}>
+    <>
+      <InteractiveNeuralVortex opacity={isLanding ? 0.6 : 0.25} className="transition-opacity duration-1000" />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname.split("/")[1] || "root"}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login/producer" element={<ProducerLoginPage />} />
         <Route path="/login/consumer" element={<ConsumerLoginPage />} />
@@ -74,6 +79,7 @@ const AnimatedRoutes = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
+    </>
   );
 };
 

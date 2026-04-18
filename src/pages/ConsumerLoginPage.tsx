@@ -40,7 +40,7 @@ export default function ConsumerLoginPage() {
     setIsSubmitting(true);
     setMessage(null);
     try {
-      if (auth?.signInWithGoogle) await auth.signInWithGoogle();
+      if (auth?.signInWithGoogle) await auth.signInWithGoogle("consumer");
     } catch (err: any) {
       setMessage({ type: "error", text: err?.message || "Failed to log in with Google" });
       setIsSubmitting(false);

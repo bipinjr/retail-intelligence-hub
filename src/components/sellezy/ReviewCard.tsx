@@ -1,69 +1,65 @@
-import { ReviewMock } from "@/lib/mockData";
 import { GlassCard } from "./GlassCard";
 import { QualityBadge } from "./QualityBadge";
-import { TranslationHint } from "./TranslationHint";
 import { PersonaLabel } from "./PersonaLabel";
 import { SentimentBar } from "./SentimentBar";
-import { Star, ThumbsUp } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
-
-const highlight = (text: string, words: string[]) => {
-  if (!words.length) return text;
-  const re = new RegExp(`(${words.join("|")})`, "gi");
-  return text.split(re).map((p, i) =>
-    words.some((w) => w.toLowerCase() === p.toLowerCase()) ? (
-      <strong key={i} className="text-primary-glow font-bold">{p}</strong>
-    ) : (
-      <span key={i}>{p}</span>
-    )
-  );
-};
+import { NormalizedReview } from "@/pages/ReviewExplorer";
 
 interface Props {
-  review: ReviewMock;
-  showShift?: boolean;
-  highlightFeatures?: string[];
+  review: NormalizedReview;
 }
 
-export const ReviewCard = ({ review, showShift, highlightFeatures = [] }: Props) => {
-  const isHighlighted = highlightFeatures.length > 0 && review.features.some((f) => highlightFeatures.includes(f.name));
+export const ReviewCard = ({ review }: Props) => {
+  // Gracefully skip render blocks if somehow the object itself is physically missing
+  if (!review) return null;
+
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <GlassCard
         hoverable={false}
-        className={`p-4 space-y-3 ${isHighlighted ? "border-l-4 !border-l-primary" : ""}`}
+        className="p-4 space-y-3"
       >
         <div className="flex flex-wrap gap-1.5">
-          {review.badges.map((b) => <QualityBadge key={b} type={b} />)}
+          {review.verified && <QualityBadge type="verified" />}
+          <QualityBadge type="detailed" />
+          {review.platform && review.platform !== "Unknown" && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono border border-accent/30 bg-accent/10 text-accent">
+              {review.platform}
+            </span>
+          )}
         </div>
-        {review.langOriginal && <TranslationHint lang={review.langOriginal} />}
-        <p className="text-sm text-foreground/90 leading-relaxed">{highlight(review.text, review.highlights)}</p>
-        {review.personas.length > 0 && (
+        
+        <p className="text-sm text-foreground/90 leading-relaxed font-medium">
+          {review.productName}
+        </p>
+
+        <p className="text-sm text-foreground/80 leading-relaxed border-l-2 border-primary/20 pl-3">
+          "{review.reviewText}"
+        </p>
+        
+        {review.labels.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {review.personas.map((p) => <PersonaLabel key={p} type={p} />)}
+            {review.labels.map((p, idx) => <PersonaLabel key={`${p}-${idx}`} type={p} />)}
           </div>
         )}
+        
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((s) => (
             <Star key={s} className={`w-3.5 h-3.5 ${s <= review.rating ? "fill-accent text-accent" : "text-muted-foreground/40"}`} />
           ))}
         </div>
+        
         <div className="space-y-1">
-          {review.features.map((f) => <SentimentBar key={f.name} label={f.name} score={f.score} />)}
+          <SentimentBar label="General Sentiment" score={review.sentiment === 'Positive' ? 90 : review.sentiment === 'Negative' ? 20 : 50} />
+          {review.features.map((f, idx) => (
+             <SentimentBar key={`${f}-${idx}`} label={f} score={50} /> 
+          ))}
         </div>
-        {showShift && review.before > 0 && (
-          <div className="space-y-1 pt-2 border-t border-primary/20">
-            <SentimentBar label="Older" score={review.before} />
-            <SentimentBar label="Recent" score={review.after} />
-            {review.after > review.before && (
-              <div className="text-xs text-primary-glow font-mono">▲ Brand improved by {review.after - review.before}%</div>
-            )}
-          </div>
-        )}
+        
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-primary/10">
-          <span className="inline-flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> {review.helpful}</span>
-          <span>{review.date}</span>
-          <span className="text-primary-glow">{review.category}</span>
+          <span className="font-mono">{review.reviewerName}</span>
+          <span>{review.createdAt || "Recent"}</span>
         </div>
       </GlassCard>
     </motion.div>

@@ -13,6 +13,7 @@ export interface Review {
   latitude: number | null;
   longitude: number | null;
   source: string | null;
+  platform: string | null;
   created_at: string;
 }
 
@@ -85,6 +86,7 @@ export async function insertReview(reviewData: InsertReviewDTO): Promise<{ data:
     latitude numeric,
     longitude numeric,
     source text,
+    platform text,
     created_at timestamp with time zone DEFAULT now()
  );
  

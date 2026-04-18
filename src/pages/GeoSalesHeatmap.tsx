@@ -232,19 +232,11 @@ export default function GeoSalesHeatmap() {
 
             {/* Step 9/10 View Toggle Overlay */}
             <div className="absolute top-3 right-3 z-[1500] flex gap-1 p-1 bg-background/80 backdrop-blur rounded-full border border-primary/20 shadow-lg">
-              {(["sales", "complaints", "both"] as const).map((m) => (
+              {(["both"] as const).map((m) => (
                 <button
                   key={m}
                   onClick={() => setViewMode(m)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-mono capitalize transition-all ${
-                    viewMode === m
-                      ? m === "sales"
-                        ? "bg-[#1A6B61] text-white shadow"
-                        : m === "complaints"
-                        ? "bg-destructive text-destructive-foreground shadow"
-                        : "bg-primary text-primary-foreground shadow"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                  }`}
+                  className={`px-6 py-1.5 rounded-full text-xs font-mono capitalize transition-all bg-primary text-primary-foreground shadow`}
                 >
                   {m}
                 </button>

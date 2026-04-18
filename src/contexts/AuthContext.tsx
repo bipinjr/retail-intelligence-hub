@@ -19,7 +19,7 @@ interface AuthCtx {
   loading: boolean;
   login: (role: Exclude<Role, null>) => void;
   logout: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (intendedRole?: Role) => Promise<void>;
   consumerSignUp: (email: string, pass: string, name: string) => Promise<void>;
   consumerSignIn: (email: string, pass: string) => Promise<void>;
   consumerForgotPassword: (email: string) => Promise<void>;
@@ -41,6 +41,7 @@ const AuthContext = createContext<AuthCtx>({
 });
 
 const STORAGE_KEY = "sellezy.role";
+const PENDING_ROLE_KEY = "sellezy.pending_role";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<Role>(() => {
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logoutLocal = () => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(PENDING_ROLE_KEY);
     setRole(null);
   };
 
@@ -71,8 +73,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (intendedRole?: Role) => {
     try {
+      if (intendedRole) {
+        localStorage.setItem(PENDING_ROLE_KEY, intendedRole);
+      }
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -119,7 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw error;
   };
 
-  const fetchOrEnsureProfile = async (sessionUser: User) => {
+  const fetchOrEnsureProfile = async (sessionUser: User, forcedRole?: Role) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -127,8 +133,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq("id", sessionUser.id)
         .maybeSingle();
 
+      const targetRole = forcedRole || (localStorage.getItem(STORAGE_KEY) as Role) || "consumer";
+
       if (data) {
-        setProfile(data as Profile);
+        // If current profile role differs from the login intent, we update it to synchronize
+        if (forcedRole && data.role !== forcedRole) {
+          const { data: updated } = await supabase
+            .from("profiles")
+            .update({ role: forcedRole })
+            .eq("id", sessionUser.id)
+            .select()
+            .single();
+          if (updated) setProfile(updated as Profile);
+        } else {
+          setProfile(data as Profile);
+        }
         return;
       }
 
@@ -140,7 +159,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           sessionUser.user_metadata?.name ||
           null,
         avatar_url: sessionUser.user_metadata?.avatar_url || null,
-        role: "consumer",
+        role: targetRole,
       };
 
       const { data: inserted, error: insertErr } = await supabase
@@ -159,6 +178,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resolveRoleOnAuth = (session: any) => {
+    const pending = localStorage.getItem(PENDING_ROLE_KEY) as Role;
+    if (pending) {
+      console.log("Resolving role from pending tracker:", pending);
+      loginLocal(pending);
+      localStorage.removeItem(PENDING_ROLE_KEY);
+      return pending;
+    }
+    
+    const current = localStorage.getItem(STORAGE_KEY) as Role;
+    if (!current) {
+      loginLocal("consumer");
+      return "consumer";
+    }
+    return current;
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -167,13 +203,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) console.error("Session error:", error);
       
       if (session) {
-        const currentRole = localStorage.getItem(STORAGE_KEY);
-        if (currentRole !== "producer") {
-          loginLocal("consumer");
-        }
+        const activeRole = resolveRoleOnAuth(session);
         setUser(session.user);
         
-        fetchOrEnsureProfile(session.user).finally(() => {
+        fetchOrEnsureProfile(session.user, activeRole).finally(() => {
           if (mounted) setLoading(false);
         });
       } else {
@@ -186,23 +219,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session) {
         setUser(session.user);
+        if (event === "SIGNED_IN") {
+          const activeRole = resolveRoleOnAuth(session);
+          fetchOrEnsureProfile(session.user, activeRole);
+        }
       } else {
         setUser(null);
         setProfile(null);
-      }
-
-      if (event === "SIGNED_IN" && session) {
-        const currentRole = localStorage.getItem(STORAGE_KEY);
-        if (currentRole !== "producer") {
-          loginLocal("consumer");
-        }
-        fetchOrEnsureProfile(session.user);
-      } else if (event === "SIGNED_OUT") {
-        const currentRole = localStorage.getItem(STORAGE_KEY);
-        if (currentRole === "consumer") {
+        if (event === "SIGNED_OUT") {
           logoutLocal();
         }
-        setProfile(null);
       }
     });
 
