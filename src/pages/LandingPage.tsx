@@ -10,7 +10,7 @@ import { BarChart, Bar, ResponsiveContainer } from "recharts";
 
 // Legacy FloatingDots removed in favor of InteractiveNeuralVortex
 
-const headlineWords = ["Turn", "Noise", "Into", "Intelligence."];
+const headlineWords = ["Turn", "Noise", "Into", "Profit"];
 
 const PIPELINE = [
   { icon: VolumeX, title: "Noise Reduction", desc: "Deduplication, spam filter, emoji & Hinglish normalisation" },
@@ -129,7 +129,7 @@ export default function LandingPage() {
       {/* STATS */}
       <section className="container py-20" id="how">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <StatCard label="Reviews Processed" count={200000} suffix="+" />
+          <StatCard label="Reviews Processed" count={1000} suffix="+" />
           <StatCard label="Indian Languages" count={6} />
           <StatCard label="AI Pipeline Stages" count={4} />
           <StatCard label="Stakeholder Roles" count={3} />
